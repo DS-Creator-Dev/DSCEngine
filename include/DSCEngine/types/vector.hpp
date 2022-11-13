@@ -175,8 +175,7 @@ template<typename T>
 DSC::Vector<T>::Vector(const Vector<T>& vector)
 {
 	_size = vector._size;
-	capacity = vector.capacity;
-	delete[] container;
+	capacity = vector.capacity;	
 	container = new T[capacity];	
 	dmaCopy(vector.container, container, _size * sizeof(T));	
 }
