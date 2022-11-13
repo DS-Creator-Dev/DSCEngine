@@ -8,6 +8,7 @@
 #pragma once
 
 #include "DSCEngine/debug/log.hpp"
+#include "DSCEngine/debug/assert.hpp"
 
 #define callstack_call ;
 #define callstack_ret return
@@ -73,9 +74,9 @@ namespace DSC
 		* \brief Finds an item in the vector
 		* 
 		* \param [in] item Item to be found
-		* \return true if the item was found, false otherwise		
+		* \return position of the first occurence of the item if it was found, -1 otherwise		
 		 */
-		bool find(const T& item) const;		
+		int find(const T& item) const;
 		
 		/*!
 		* \brief Removes the first occurence of an element from the vector
@@ -229,6 +230,7 @@ void DSC::Vector<T>:: container_resize(int new_cap)
 template<typename T>
 void DSC::Vector<T>::resize(int new_size)
 {		
+	nds_assert(new_size>=0);
 	container_resize(new_size);
 	_size = new_size;
 }
@@ -248,8 +250,8 @@ T& DSC::Vector<T>::operator[] (int index)
 {
 	callstack_call
 	
-	if(index>=_size)
-		Debug::error("Index out of range");
+	nds_assert(index>=0, "Index out of range");
+	nds_assert(index<_size, "Index out of range");
 	
 	callstack_ret container[index];
 }
@@ -259,8 +261,8 @@ const T& DSC::Vector<T>::operator[] (int index) const
 {
 	callstack_call
 	
-	if(index>=_size)
-		Debug::error("Index out of range");
+	nds_assert(index>=0, "Index out of range");
+	nds_assert(index<_size, "Index out of range");
 	
 	callstack_ret container[index];
 }
@@ -270,21 +272,21 @@ const T& DSC::Vector<T>::get_at(int index) const
 {
 	callstack_call
 	
-	if(index>=_size)
-		Debug::error("Index out of range");
+	nds_assert(index>=0, "Index out of range");
+	nds_assert(index<_size, "Index out of range");
 	
 	callstack_ret container[index];
 }
 
 template<typename T>
-bool DSC::Vector<T>::find(const T& item) const
+int DSC::Vector<T>::find(const T& item) const
 {
 	for(int i=0;i<_size;i++)
 	{
 		if(container[i]==item)
-			return true;
+			return i;
 	}
-	return false;
+	return -1;
 }
 
 template<typename T>
@@ -309,8 +311,9 @@ template<typename T>
 void DSC::Vector<T>::remove_at(int index)
 {
 	callstack_call
-	if(index >= _size)
-		Debug::error("Index out of range");
+	
+	nds_assert(index>=0, "Index out of range");
+	nds_assert(index<_size, "Index out of range");	
 	
 	_size--;
 	for(int j=index;j<_size;j++)
