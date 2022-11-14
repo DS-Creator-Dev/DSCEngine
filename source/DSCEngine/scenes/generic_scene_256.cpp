@@ -90,10 +90,19 @@ void DSC::GenericScene256::solve_map_requirements_main()
 		}
 		
 		// get the number of zones required for the background data (tileset/bitmap)
-		int gfx_blocks = MeasureValue(req.data_length)		
+		
+		// reserve the entire map space for bitmaps even though the bitmap doesn't fully use it
+		// If this is not done, then scrolling down will reveal unwanted artifacts from VRAM that
+		// reside in the bitmap's space		
+		
+		MeasureValue value = req.is_bitmap 
+			? Measure().bpp(req.color_depth).bitmap(req.width, req.height)
+			: MeasureValue(req.data_length);		
+			
+		int gfx_blocks = value
 			.fit()
 			.blocks(16)
-			.kilobytes();
+			.kilobytes();		
 			
 		tile_base[i] = izone;
 		izone+=gfx_blocks;		
@@ -214,16 +223,40 @@ void DSC::GenericScene256::require_tiledmap(int id, int px_width, int px_height,
 	};	
 }
 
+void fitting_bitmap8_size(int px_width, int px_height, int* res_width, int* res_height)
+{
+	static const short w8[] = { 128, 256, 512, 512, 512, 1024};
+	static const short h8[] = { 128, 256, 256, 512, 1024, 512};
+	static const int size = sizeof(w8)/sizeof(short);	
+	
+	*res_width = -1;
+	*res_height = -1;
+	
+	for(int i=0;i<size;i++)
+	{
+		if(px_width <= w8[i] && px_height <= h8[i])
+		{
+			*res_width = w8[i];
+			*res_height = h8[i];
+			return;
+		}
+	}	
+}
+
 void DSC::GenericScene256::require_bitmap(int id, int px_width, int px_height)
 {
 	nds_assert(0<=id && id<8);
+	
+	int fitting_width, fitting_height;
+	fitting_bitmap8_size(px_width, px_height,&fitting_width, &fitting_height);	
+	
 	privates->bg_requirements[id] = 
 	{
 		enabled      : true,
 		is_bitmap    : true,
 		color_depth  : 8,
-		width        : px_width,
-		height       : px_height,
+		width        : fitting_width,
+		height       : fitting_height,
 		data_length  : Measure()._8bpp().bitmap(px_width, px_height),
 		src_asset    : nullptr
 	};
@@ -238,16 +271,42 @@ void DSC::GenericScene256::require_bitmap(int id, const AssetData* bitmap)
 	privates->bg_requirements[id].src_asset = bitmap;
 }
 
+void fitting_bitmap16_size(int px_width, int px_height, int* res_width, int* res_height)
+{
+	static const short w16[] = { 128, 256, 512, 512};
+	static const short h16[] = { 128, 256, 256, 512};
+	static const int size = sizeof(w16)/sizeof(short);	
+	
+	*res_width = -1;
+	*res_height = -1;
+	
+	for(int i=0;i<size;i++)
+	{
+		if(px_width <= w16[i] && px_height <= h16[i])
+		{
+			*res_width = w16[i];
+			*res_height = h16[i];
+			return;
+		}
+	}	
+}
+
 void DSC::GenericScene256::require_bitmap_16bpp(int id, int px_width, int px_height)
 {
 	nds_assert(0<=id && id<8);
+	
+	nds_assert(0<=id && id<8);
+	
+	int fitting_width, fitting_height;
+	fitting_bitmap16_size(px_width, px_height,&fitting_width, &fitting_height);
+	
 	privates->bg_requirements[id] = 
 	{
 		enabled      : true,
 		is_bitmap    : true,
 		color_depth  : 16,
-		width        : px_width,
-		height       : px_height,
+		width        : fitting_width,
+		height       : fitting_height,
 		data_length  : Measure()._16bpp().bitmap(px_width, px_height),
 		src_asset    : nullptr
 	};
@@ -270,7 +329,7 @@ DSC::GenericScene256::~GenericScene256()
 #include <nds.h>
 
 int DSC::GenericScene256::validate_bg_size(int w, int h, int color_depth, bool is_bitmap)
-{	
+{		
 	nds_assert((w&(w-1))==0, "Map width must be a power of 2");
 	nds_assert((h&(h-1))==0, "Map height must be a power of 2");
 	

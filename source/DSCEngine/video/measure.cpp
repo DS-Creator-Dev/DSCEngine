@@ -1,5 +1,7 @@
 #include "DSCEngine/video/measure.hpp"
 
+#include "DSCEngine/debug/assert.hpp"
+
 using namespace DSC;
 
 
@@ -54,6 +56,7 @@ MeasureValue DSC::Measure::tiles(int rows_count, int cols_count) const
 	
 MeasureValue DSC::Measure::bitmap(int width, int height) const
 {
+	//Debug::log("M %i %i %i", width, height, color_depth);
 	return width * height * color_depth / 8;
 }
 	
@@ -65,10 +68,18 @@ int DSC::Measure::tiles_count(int size) const
 
 MeasureValue DSC::Measure::map_size(int width, int height) const
 {
+	nds_assert(!bmp, "Can't compute map_size(w,h) for bitmaps. Use .bitmap(w,h) instead");
 	return width/8 * height/8 * bytes_per_map_entry();
 }
 
 int DSC::Measure::bytes_per_map_entry() const
 {
 	return 2; // would be 1 for rotation bg's
+}
+
+Measure& DSC::Measure::bpp(int _color_depth)
+{
+	nds_assert(_color_depth==4 || _color_depth==8 || _color_depth==16);
+	this->color_depth = _color_depth;
+	return *this;
 }

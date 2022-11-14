@@ -8,7 +8,7 @@ namespace DSC
 	{
 	private:
 		int raw_value;		
-		bool conversion_fit = true;
+		bool conversion_fit = false;
 		int block_cnt = 1;
 	public:		
 		/*! \brief creates measure data from numeric value
@@ -74,6 +74,11 @@ namespace DSC
 			\return the current instance with modified settings
 		 */
 		Measure& _16bpp();
+		
+		/*! \brief alternative to _4bpp(), _8bpp() or _16bpp() with dynamic parameter
+			\return the current instance with modified settings
+		 */
+		Measure& bpp(int color_depth);
 		
 		/*! \brief chain function to set meta tile size
 			\param tw meta tile width (e.g. for 32x16px tiles, tw equals 4)
