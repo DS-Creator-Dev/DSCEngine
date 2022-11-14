@@ -97,12 +97,12 @@ void DSC::GenericScene256::solve_map_requirements_main()
 		
 		MeasureValue value = req.is_bitmap 
 			? Measure().bpp(req.color_depth).bitmap(req.width, req.height)
-			: MeasureValue(req.data_length);		
+			: MeasureValue(req.data_length);
 			
 		int gfx_blocks = value
 			.fit()
 			.blocks(16)
-			.kilobytes();		
+			.kilobytes();
 			
 		tile_base[i] = izone;
 		izone+=gfx_blocks;		
@@ -161,7 +161,8 @@ void DSC::GenericScene256::load_assets()
 			{
 				fatal("Palette allocation failed");
 			}
-			VramLoader::load(req.src_asset, bgGetGfxPtr(i), palloc.indices);
+			Debug::log("%i %i", req.width, req.src_asset->width);
+			VramLoader::load(req.src_asset, bgGetGfxPtr(i), palloc.indices, req.width);
 		}
 	}
 }

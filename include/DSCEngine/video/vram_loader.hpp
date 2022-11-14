@@ -7,6 +7,6 @@ namespace DSC
 	class VramLoader
 	{
 	public:
-		static void load(const AssetData* asset, void* dest, short* pal_indices = nullptr);
+		static void load(const AssetData* asset, void* dest, short* pal_indices = nullptr, int map_width = 0);
 	};
 }
