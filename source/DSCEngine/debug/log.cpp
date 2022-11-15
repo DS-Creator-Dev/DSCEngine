@@ -18,12 +18,22 @@
 		:: "r"(message) \
 	);
 
+#define LOG_BUF 8
 #define LOG_MSG 7
 #define LOG_WRN 6
 #define LOG_ERR 5
 
 namespace
 {	
+	
+	char* copy_str(char* dest, const char* src)
+	{
+		for(;*src;) 
+			*(dest++) = *(src++);		
+		*dest = '\0';
+		return dest;
+	}
+	
 	__attribute__((target("thumb"))) 
 	void _log(int role, const char* message)
 	{
@@ -34,23 +44,17 @@ namespace
 		case LOG_WRN:
 			LOG_CODE(MOV_R6_R6, message); break;
 		case LOG_ERR:
-			LOG_CODE(MOV_R5_R5, message); break;
+			LOG_CODE(MOV_R5_R5, message); break;		
+		case LOG_BUF:
+			break;
 		}		
-	}
-	
-	char* copy_str(char* dest, const char* src)
-	{
-		for(;*src;) 
-			*(dest++) = *(src++);		
-		*dest = '\0';
-		return dest;
-	}
+	}	
 	
 	static const char* hex_lower = "0123456789abcdef";
 	static const char* hex_upper = "0123456789ABCDEF";
 		
 	__attribute__((target("thumb"))) 
-	void _logv(int role, const char* message, va_list args)
+	void _logv(int role, char* dest, const char* message, va_list args)
 	{							
 		char* result = new char[1024];
 		char* built = result;
@@ -190,10 +194,14 @@ namespace
 			{
 				*(built++)=*(msg++);
 			}
-		}			
-		
+		}					
 		*(built)='\0';		
-		_log(role, result);
+		
+		_log(role, result);		
+		if(role==LOG_BUF)
+		{
+			copy_str(dest, result);
+		}
 		
 		delete[] result;
 	}		
@@ -203,7 +211,7 @@ void DSC::Debug::log(const char* message, ...)
 { 
 	va_list args;	
 	va_start(args, message);
-	_logv(LOG_MSG, message, args);	
+	_logv(LOG_MSG, nullptr, message, args);	
 	va_end(args);
 }
 
@@ -211,7 +219,7 @@ void DSC::Debug::warn(const char* message, ...)
 { 
 	va_list args;
 	va_start(args, message);
-	_logv(LOG_WRN, message, args);	
+	_logv(LOG_WRN, nullptr, message, args);	
 	va_end(args);
 }
 
@@ -219,6 +227,13 @@ void DSC::Debug::error(const char* message, ...)
 { 
 	va_list args;
 	va_start(args, message);
-	_logv(LOG_ERR, message, args);	
+	_logv(LOG_ERR, nullptr, message, args);	
 	va_end(args);
+}
+
+#include "log.h"
+
+void DSC::Debug::log_to_buffer(char* buffer, const char* message, va_list args)
+{	
+	_logv(LOG_BUF, buffer, message, args);	
 }

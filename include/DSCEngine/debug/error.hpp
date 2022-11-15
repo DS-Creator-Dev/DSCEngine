@@ -7,6 +7,8 @@
 
 namespace DSC
 {
+	void fatal_freeze(const char* message, ...);
+	
 	/*! \brief Stops execution with a fatal error
 		See DSC::Debug::log() for more details
 	 */	
@@ -16,11 +18,8 @@ namespace DSC
 		DSC::Debug::log("The execution stopped");
 		
 		if(!IS_TESTMOD)
-		{
-			while(1)
-			{
-				swiWaitForVBlank();
-			}
+		{			
+			fatal_freeze(message, args...);			
 		}		
 		else
 		{
