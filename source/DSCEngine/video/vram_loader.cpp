@@ -9,19 +9,20 @@ using namespace DSC;
 
 void DSC::VramLoader::load(const AssetData* asset, void* dest, short* pal_indices, int map_width)
 {
-	Debug::log("MW = %i, AW = %i",map_width, 8*asset->width);
+	Debug::log("Loading asset %s (%i,%i)", asset->is_bitmap()?"bitmap":"tileset", 8*asset->width, 8*asset->height);
+	//Debug::log("MW = %i, AW = %i",map_width, 8*asset->width);
 	if(!asset->is_bitmap() || (asset->is_bitmap() && (map_width == 0 || map_width == 8*asset->width)))
 	{
-		Debug::log("first");
+		//Debug::log("first");
 		if(pal_indices==nullptr || asset->get_color_depth()!=8)
 		{					
 			asset->extract(dest, 0, asset->get_gfx_length());									
 			return;
 		}		
 		int len = asset->get_gfx_length();
-		Debug::log("LEN = %i", len);
+		//Debug::log("LEN = %i", len);
 		unsigned char* buffer = new unsigned char[len];
-		Debug::log("Allocated");
+		//Debug::log("Allocated");
 		
 		asset->extract(buffer, 0, len);
 		
@@ -31,19 +32,19 @@ void DSC::VramLoader::load(const AssetData* asset, void* dest, short* pal_indice
 				buffer[i] = pal_indices[buffer[i]];
 		}		
 		
-		Debug::log("Buffered created");
+		//Debug::log("Buffered created");
 		
 		dmaCopy(buffer, dest, len);	// <-- beware for bugs idk	
 		
-		Debug::log("dma");
+		//Debug::log("dma");
 			
 		delete[] buffer;
 		
-		Debug::log("fin");
+		//Debug::log("fin");
 	}
 	else // if(asset->is_bitmap() && 8*asset->width != map_width
 	{		
-		Debug::log("Here?");
+		//Debug::log("Here?");
 		nds_assert(8*asset->width < map_width);
 		
 		int len = asset->get_gfx_length();

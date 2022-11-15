@@ -52,6 +52,8 @@ namespace DSC
 		void require_bitmap_16bpp(int id, int px_width, int px_height);
 		void require_bitmap_16bpp(int id, const DSC::AssetData* bitmap);
 		
+		
+		
 		~GenericScene256();
 		
 		static const int MAIN_BG0;

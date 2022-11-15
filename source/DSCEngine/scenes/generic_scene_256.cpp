@@ -28,6 +28,7 @@ struct DSC::GenericScene256::__privates__
 	BackgroundRequirement bg_requirements[8];
 	
 	PaletteManager main_palette = PaletteManager(BG_PALETTE);
+	PaletteManager sub_palette = PaletteManager(BG_PALETTE_SUB);
 };
 
 DSC::GenericScene256::GenericScene256()
@@ -142,11 +143,109 @@ void DSC::GenericScene256::solve_map_requirements_main()
 			bgInit(i, bg_type, bg_size, tile_base[i], map_base[i]);	
 		}
 	}		
+	
+	delete[] tile_base;
+	delete[] map_base;
 }
 
 void DSC::GenericScene256::solve_map_requirements_sub()
 {
-	// same as above but I'm too tired to do it
+	int izone = 0;
+	int imap_base = 0;
+	
+	int* tile_base = new int[4];
+	int* map_base = new int[4];	
+	
+	int bmp_cnt = 0;
+	
+	// solve main
+	for(int i=0;i<4;i++)
+	{
+		BackgroundRequirement& req = privates->bg_requirements[4+i];
+		
+		if(!req.enabled) continue;
+		
+		if(imap_base>=32)
+		{
+			fatal("Map base exceeded for sub BG%i",i);
+		}		
+		
+		map_base[i] = imap_base;
+		
+		if(!req.is_bitmap) // is it tilemap? then, update the map base index
+		{
+			// get the number of 2KB blocks that would fit the map data for this bg			
+			int map_blocks = Measure()
+				.map_size(req.width, req.height) 
+				.fit()
+				.blocks(2)
+				.kilobytes();
+				
+			imap_base+=map_blocks; // suppose we have already allocated this bg
+		}					
+		else
+		{
+			nds_assert(i>=2, "Backgrounds 0,1 cannot be bitmaps");			
+			bmp_cnt++;
+		}
+		
+		// get the number of zones required for the background data (tileset/bitmap)
+		
+		// reserve the entire map space for bitmaps even though the bitmap doesn't fully use it
+		// If this is not done, then scrolling down will reveal unwanted artifacts from VRAM that
+		// reside in the bitmap's space		
+		
+		MeasureValue value = req.is_bitmap 
+			? Measure().bpp(req.color_depth).bitmap(req.width, req.height)
+			: MeasureValue(req.data_length);
+			
+		int gfx_blocks = value
+			.fit()
+			.blocks(16)
+			.kilobytes();
+			
+		tile_base[i] = izone;
+		izone+=gfx_blocks;		
+	}	
+	
+	// get the "offset" zone - the tile base right after all the map data (1 zone == 8 map blocks)
+	int ozone = MeasureValue(imap_base).fit().blocks(8).value();
+	if(ozone + izone > 8) // exceeded 128KB limit?
+	{
+		fatal("Main backgrounds data does not fit in allocated VRAM");
+	}
+			
+	for(int i=0;i<4;i++) tile_base[i] += ozone;
+	
+	Debug::log("Sub?");
+	if(bmp_cnt==2)
+	{
+		videoSetModeSub(MODE_5_2D);
+	}
+	else if(bmp_cnt==1)
+	{
+		if(privates->bg_requirements[4+2].is_bitmap)
+			videoSetModeSub(MODE_5_2D);
+		else
+			videoSetModeSub(MODE_3_2D);
+	}	
+	else videoSetModeSub(MODE_0_2D);
+	
+	// init backgrounds	
+	for(int i=0;i<4;i++)
+	{
+		BackgroundRequirement& req = privates->bg_requirements[4+i];
+		if(req.enabled)
+		{
+			int config = validate_bg_size(req.width, req.height, req.color_depth, req.is_bitmap);
+			BgType bg_type = (BgType)((config>>16)&0xFFFF);
+			BgSize bg_size = (BgSize)(config & 0xFFFF);
+			bgInitSub(i, bg_type, bg_size, tile_base[i], map_base[i]);
+		}
+	}		
+	
+	delete[] tile_base;
+	delete[] map_base;
 }
 
 void DSC::GenericScene256::load_assets()
@@ -156,7 +255,8 @@ void DSC::GenericScene256::load_assets()
 		BackgroundRequirement& req = privates->bg_requirements[i];
 		if(req.enabled && req.src_asset!=nullptr)
 		{
-			PaletteAllocationResult palloc = privates->main_palette.try_load(req.src_asset);
+			PaletteManager* palette = i<4 ? &privates->main_palette : &privates->sub_palette;
+			PaletteAllocationResult palloc = palette->try_load(req.src_asset);
 			if(!palloc.succeeded)
 			{
 				fatal("Palette allocation failed");
