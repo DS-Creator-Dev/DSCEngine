@@ -14,6 +14,7 @@
 
 #include "DSCEngine/types/templates.hpp"
 #include "DSCEngine/types/hash_map.hpp"
+#include "DSCEngine/types/stack.hpp"
 #include "DSCEngine/types/vector.hpp"
 
 #include "DSCEngine/video/measure.hpp"

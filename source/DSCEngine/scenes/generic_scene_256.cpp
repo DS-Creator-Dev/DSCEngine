@@ -106,7 +106,7 @@ void DSC::GenericScene256::solve_map_requirements_main()
 			.kilobytes();
 			
 		tile_base[i] = izone;
-		izone+=gfx_blocks;		
+		izone+=gfx_blocks;
 	}	
 	
 	// get the "offset" zone - the tile base right after all the map data (1 zone == 8 map blocks)
