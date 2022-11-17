@@ -1,14 +1,26 @@
 #pragma once
 
 #include <nds.h>
+#include "obj_attribute.hpp"
+
+#include "DSCEngine/types/bits_array.hpp"
 
 namespace DSC
 {
 	/*! \brief Low level OAM handler
 	* 
 	 */
-	namespace OamPool
-	{			
+	class OamPool
+	{		
+	private:
+		BitsArray<128> freeSlots;
+		
+		static constexpr unsigned int OBJ_COUNT = 128;
+		static constexpr unsigned int OBJ_BUFFER_SIZE = OBJ_COUNT * sizeof(ObjAttribute);
+		
+		short __obj_attr_buffer[OBJ_BUFFER_SIZE / 2];
+		ObjAttribute* obj_attr() const { return (ObjAttribute*)__obj_attr_buffer; }
+	public:
 		/*!
 		* \brief sets OAM to its original state
 		 */
@@ -24,7 +36,7 @@ namespace DSC
 		*	 	Use remove_obj() to safely dispose of the object.
 		* \details This function operates on a shadow memory zone. Use OamPool::deploy() to make the changes visible on the screen.
 		 */
-		SpriteEntry* add_obj(SpriteEntry attr);	
+		SpriteEntry* add_obj(SpriteEntry attr);
 		
 		/*!
 		* \brief Removes object from OAM by its identificator pointer
@@ -42,5 +54,5 @@ namespace DSC
 		void deploy();
 		
 		void set_rotation_matrix(int id, int pa, int pb, int pc, int pd);
-	}
+	};
 }

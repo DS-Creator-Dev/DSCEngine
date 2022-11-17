@@ -56,14 +56,14 @@ namespace DSC
 		
 		~GenericScene256();
 		
-		static const int MAIN_BG0;
-		static const int MAIN_BG1;
-		static const int MAIN_BG2;
-		static const int MAIN_BG3;
+		static constexpr int MAIN_BG0 = 0;
+		static constexpr int MAIN_BG1 = 1;
+		static constexpr int MAIN_BG2 = 2;
+		static constexpr int MAIN_BG3 = 3;
 		
-		static const int SUB_BG0;
-		static const int SUB_BG1;
-		static const int SUB_BG2;
-		static const int SUB_BG3;
+		static constexpr int SUB_BG0 = 4;
+		static constexpr int SUB_BG1 = 5;
+		static constexpr int SUB_BG2 = 6;
+		static constexpr int SUB_BG3 = 7;
 	};
 }
