@@ -5,7 +5,7 @@ namespace DSC
 	class String
 	{
 	private:
-		const char* buffer = nullptr;		
+		char* buffer = nullptr;		
 		short len = 0;
 	public:
 		String();

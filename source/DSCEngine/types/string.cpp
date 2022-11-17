@@ -9,11 +9,12 @@ DSC::String::String() : String("") { }
 DSC::String::String(const char* text)
 {
 	len = 0;
-	for(char* i=text; *i; i++,len++);
+	for(const char* i=text; *i; i++,len++);
 	
 	buffer = new char[len+1];
 	
-	for(char* s=text, char* d=buffer; *s; *(d++)=*(s++));
+	char* d=buffer;
+	for(const char* s=text; *s; *(d++)=*(s++));
 	*d = '\0';
 }
 
@@ -24,7 +25,7 @@ DSC::String::operator const char*() const
 
 int DSC::String::size() const { return len; }
 
-char operator[] (int index) const
+char DSC::String::operator[] (int index) const
 {
 	nds_assert(0<=index);
 	nds_assert(index<size());
@@ -32,7 +33,7 @@ char operator[] (int index) const
 	return buffer[index];
 }
 
-bool operator == (const String& other) const
+bool DSC::String::operator == (const String& other) const
 {
 	if(this->size() != other.size()) return false;		
 	const char* b1 = this->buffer;

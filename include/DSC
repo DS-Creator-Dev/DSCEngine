@@ -13,6 +13,7 @@
 #include "DSCEngine/scenes/generic_scene_256.hpp"
 
 #include "DSCEngine/types/templates.hpp"
+#include "DSCEngine/types/bits_array.hpp"
 #include "DSCEngine/types/hash_map.hpp"
 #include "DSCEngine/types/stack.hpp"
 #include "DSCEngine/types/vector.hpp"
