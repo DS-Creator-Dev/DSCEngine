@@ -37,7 +37,7 @@ namespace DSC
 	class ObjAttribute
 	{
 	private:
-		int attr0, attr1, attr2, attr3;
+		short attr0, attr1, attr2, attr3;
 		ObjAttribute() = default;
 	public:
 		/*! \brief creates an object attribute using 8-bit palette

@@ -13,13 +13,15 @@ namespace DSC
 	class OamPool
 	{		
 	private:
-		BitsArray<128> freeSlots;
-		
 		static constexpr unsigned int OBJ_COUNT = 128;
 		static constexpr unsigned int OBJ_BUFFER_SIZE = OBJ_COUNT * sizeof(ObjAttribute);
 		
+		BitsArray<128> freeSlots;			
+		
 		short __obj_attr_buffer[OBJ_BUFFER_SIZE / 2];
 		ObjAttribute* obj_attr() const { return (ObjAttribute*)__obj_attr_buffer; }
+		
+		OamPool() = default;		
 	public:
 		/*!
 		* \brief sets OAM to its original state
@@ -54,5 +56,8 @@ namespace DSC
 		void deploy();
 		
 		void set_rotation_matrix(int id, int pa, int pb, int pc, int pd);
+		
+		static OamPool* const main();
+		static OamPool* const sub();
 	};
 }
