@@ -104,7 +104,9 @@ namespace DSC
 		 * \param [in] sender the object which fires the event
 		 * \param [in] event args (can be anything)
 		 */
-		void trigger(void* sender, void* args) const;		
+		void trigger(void* sender, void* args) const;	
+
+		~Event();
 	};
 	
 	

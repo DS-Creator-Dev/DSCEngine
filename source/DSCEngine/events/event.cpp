@@ -69,3 +69,8 @@ void DSC::Event::trigger(void* sender, void* event_args) const
 	}
 }
 
+DSC::Event::~Event()
+{
+	for(int i=0;i<actions.size();i++)
+		delete[] actions[i];
+}
