@@ -15,7 +15,14 @@ namespace DSC
 		AssetData();
 		~AssetData() = delete;
 		
+		/*! \brief gets color bit depth of the asset
+			\return color depth (4,8 or 16)
+		 */
 		int get_color_depth() const;
+		
+		/*! \brief checks if the asset is a tileset or a bitmap
+			\return true if it is bitmap, false otherwise
+		 */
 		bool is_bitmap() const;
 		
 		
@@ -25,7 +32,18 @@ namespace DSC
 		void extract_gfx(void* destination) const;
 		void extract_palette(void* destination) const;		
 		
+		/*! \brief gets the width of an asset's metatile.
+			If no metatile data is provided, the width of a tile is provided.
+			\return If the asset is a tileset, the width of the metatile measured in 8x8 tiles is returned.
+			If the asset is a bitmap, the width of the metatile measured in pixels is returned
+		 */
 		int get_metatile_width() const;
+		
+		/*! \brief gets the height of an asset's metatile.
+			If no metatile data is provided, the height of a tile is provided.
+			\return If the asset is a tileset, the height of the metatile measured in 8x8 tiles is returned.
+			If the asset is a bitmap, the height of the metatile measured in pixels is returned
+		 */
 		int get_metatile_height() const;
 		
 		static const int ROA_IS_BITMAP;

@@ -54,15 +54,13 @@ int DSC::AssetData::get_color_depth() const
 }
 
 int DSC::AssetData::get_metatile_width() const
-{
-	nds_assert(!is_bitmap(), "Metatiles on bitmap are forbidden");
-	return (flags & ROA_METATILE_WIDTH)>>11;
+{	
+	return (is_bitmap()?8:1)<<((flags & ROA_METATILE_WIDTH)>>11);
 }
 
 int DSC::AssetData::get_metatile_height() const
-{
-	nds_assert(!is_bitmap(), "Metatiles on bitmap are forbidden");
-	return (flags & ROA_METATILE_HEIGHT)>>13;
+{	
+	return (is_bitmap()?8:1)<<((flags & ROA_METATILE_HEIGHT)>>13);
 }
 
 const int DSC::AssetData::ROA_IS_BITMAP   = (1<<8);
