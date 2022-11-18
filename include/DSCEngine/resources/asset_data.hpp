@@ -33,18 +33,24 @@ namespace DSC
 		void extract_palette(void* destination) const;		
 		
 		/*! \brief gets the width of an asset's metatile.
-			If no metatile data is provided, the width of a tile is provided.
+			If no metatile data is provided, the width of a single 8x8 tile is provided.
 			\return If the asset is a tileset, the width of the metatile measured in 8x8 tiles is returned.
 			If the asset is a bitmap, the width of the metatile measured in pixels is returned
 		 */
 		int get_metatile_width() const;
 		
 		/*! \brief gets the height of an asset's metatile.
-			If no metatile data is provided, the height of a tile is provided.
+			If no metatile data is provided, the height of a single 8x8 tile is provided.
 			\return If the asset is a tileset, the height of the metatile measured in 8x8 tiles is returned.
 			If the asset is a bitmap, the height of the metatile measured in pixels is returned
 		 */
 		int get_metatile_height() const;
+		
+		/*! \brief gets the size in bytes of an asset's metatile.
+			If no metatile data is provided, the size of a single 8x8 tile is provided.
+			\return The size in bytes of a metatile
+		 */		
+		int get_metatile_size() const;
 		
 		static const int ROA_IS_BITMAP;
 		static const int ROA_COLOR_DEPTH;

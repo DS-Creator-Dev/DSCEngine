@@ -2,6 +2,7 @@
 
 #include "DSCEngine/types/vector.hpp"
 #include "DSCEngine/debug/assert.hpp"
+#include "DSCEngine/types/hash.hpp"
 
 namespace DSC
 {
@@ -12,12 +13,13 @@ namespace DSC
 	* \tparam H hash function for keys
 	* \tparam S hash container size (H(k) maps k to 0..S-1)
 	 */
-	template<typename K, typename V, int (*H)(const K&), int S> class HashMap
+	template<typename K, typename V, int (*H)(const K&) = default_hash<K, 128>, int S = 128> class HashMap
 	{
 	public:
 		struct Entry { K key; V value;};
 	private:
 		Vector<Entry> container[S];
+		int _size = 0;
 	public:
 		/*! \brief checks if a key exists in the hash map
 			\param key key to check
@@ -47,6 +49,8 @@ namespace DSC
 			\details if key doesn't exist, it is simply ignored
 		 */
 		void remove_key(const K& key);
+		
+		inline int size() const {return _size;}
 	};	
 }
 
@@ -70,9 +74,10 @@ V& DSC::HashMap<K,V,H,S>::operator[] (const K& key)
 	
 	for(int i=0;i<container[h].size();i++)
 		if(container[h][i].key==key)
-			return container[h][i].value;
+			return container[h][i].value;		
 		
 	container[h].push_back({key, V()});
+	_size++;
 	return container[h][container[h].size()-1].value;
 	
 }
@@ -99,6 +104,7 @@ void DSC::HashMap<K,V,H,S>::remove_key(const K& key)
 		if(container[h][i].key==key)
 		{
 			container[h].remove_at(i);
+			_size--;
 			return;
 		}			
 }

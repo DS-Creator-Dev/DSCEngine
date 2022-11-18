@@ -178,7 +178,14 @@ DSC::Vector<T>::Vector(const Vector<T>& vector)
 	_size = vector._size;
 	capacity = vector.capacity;	
 	container = new T[capacity];	
-	dmaCopy(vector.container, container, _size * sizeof(T));	
+	
+	for(int i=0;i<_size;i++)
+		container[i] = vector.container[i];
+	
+	// uncomment this to see where the vector copy is called
+	//#warning vector copy constructor
+	
+	//dmaCopy(vector.container, container, _size * sizeof(T));	
 }
 
 template<typename T>
@@ -188,7 +195,13 @@ DSC::Vector<T>& DSC::Vector<T>::operator = (const DSC::Vector<T>& vector)
 	capacity = vector.capacity;
 	delete[] container;
 	container = new T[capacity];	
-	dmaCopy(vector.container, container, _size * sizeof(T));	
+	
+	for(int i=0;i<_size;i++)
+		container[i] = vector.container[i];
+	
+	//#warning vector copy =
+	
+	//dmaCopy(vector.container, container, _size * sizeof(T));	
 	return *this;
 }
 

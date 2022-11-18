@@ -1,6 +1,7 @@
 #include "DSCEngine/resources/asset_data.hpp"
 
 #include "DSCEngine/debug/assert.hpp"
+#include "DSCEngine/video/measure.hpp"
 
 using namespace DSC;
 
@@ -61,6 +62,14 @@ int DSC::AssetData::get_metatile_width() const
 int DSC::AssetData::get_metatile_height() const
 {	
 	return (is_bitmap()?8:1)<<((flags & ROA_METATILE_HEIGHT)>>13);
+}
+
+int DSC::AssetData::get_metatile_size() const
+{
+	if(is_bitmap())
+		return Measure().bpp(get_color_depth()).bitmap(get_metatile_width(), get_metatile_height());
+	else 
+		return Measure().bpp(get_color_depth()).metatile(get_metatile_width(), get_metatile_height()).tiles(1);
 }
 
 const int DSC::AssetData::ROA_IS_BITMAP   = (1<<8);
