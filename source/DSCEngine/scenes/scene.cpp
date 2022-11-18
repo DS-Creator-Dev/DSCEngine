@@ -54,6 +54,8 @@ void DSC::SceneCom::next(Scene* new_scene)
 
 DSC::SceneCom* DSC::Scene::close()
 {		
-	delete this;	
+	//Debug::log("Deleting scene");
+	delete this;
+	//Debug::log("Deleted scene");
 	return &__SceneComInstance__;
 }

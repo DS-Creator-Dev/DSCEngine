@@ -35,18 +35,20 @@ namespace DSC
 		
 		virtual bool operator == (const EventHandlerContainer& other) const;
 		
-		virtual ~EventHandlerContainer() = default;
+		virtual ~EventHandlerContainer() = default;		
 	};
 			
 	class StaticEventHandlerContainer final : public EventHandlerContainer
 	{
 	private:
-		StaticEventHandler __handler;
+		StaticEventHandler __handler;		
 	public:
 		StaticEventHandlerContainer(const StaticEventHandler& handler);
 		virtual void execute(void* sender, void* args) const override;
 		
-		virtual bool operator == (const EventHandlerContainer& other) const;
+		virtual bool operator == (const EventHandlerContainer& other) const;	
+
+		~StaticEventHandlerContainer() = default;		
 	};
 	
 	template<class C>
@@ -54,12 +56,14 @@ namespace DSC
 	{
 	protected:
 		NonStaticEventHandler<C> __handler;
-		C* __instance;
+		C* __instance;		
 	public:
 		NonStaticEventHandlerContainer(const NonStaticEventHandler<C>& handler, C* instance);
 		virtual void execute(void* sender, void* args) const override;
 		
-		virtual bool operator == (const EventHandlerContainer& other) const;
+		virtual bool operator == (const EventHandlerContainer& other) const;		
+		
+		~NonStaticEventHandlerContainer() = default;
 	};
 	
 	
@@ -120,8 +124,12 @@ namespace DSC
 	template<class C>
 	void NonStaticEventHandlerContainer<C>::execute(void* sender, void* args) const
 	{
-		nds_assert(__handler!=nullptr); // if this is raised, something's really messed up
+		nds_assert(__handler!=nullptr); // if this is raised, something's really messed up		
+		//Debug::log("Executing event...");
+		
 		(__instance->*__handler)(sender, args);
+				
+		//Debug::log("Event executed");
 	}
 
 	template<class C>

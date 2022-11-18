@@ -1,6 +1,7 @@
 #include "DSCEngine/events/event.hpp"
 
 #include "DSCEngine/debug/assert.hpp"
+#include "DSCEngine/debug/log.hpp"
 
 using namespace DSC;
 
@@ -70,7 +71,9 @@ void DSC::Event::trigger(void* sender, void* event_args) const
 }
 
 DSC::Event::~Event()
-{
+{	
 	for(int i=0;i<actions.size();i++)
-		delete[] actions[i];
+	{		
+		delete actions[i];
+	}	
 }
