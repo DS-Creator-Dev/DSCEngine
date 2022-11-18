@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DSCEngine/types/point.hpp"
+#include "DSCEngine/sprites/hitbox.hpp"
 #include "DSCEngine/world/localizable.hpp"
 
 namespace DSC
@@ -16,10 +17,7 @@ namespace DSC
 		
 		Point<sf24> pos;
 		
-	
-	public:
-		
-
+	public:		
 	
 		virtual sf24 x() const override;
 		virtual sf24 y() const override;

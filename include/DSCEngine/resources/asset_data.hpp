@@ -25,7 +25,12 @@ namespace DSC
 		void extract_gfx(void* destination) const;
 		void extract_palette(void* destination) const;		
 		
+		int get_metatile_width() const;
+		int get_metatile_height() const;
+		
 		static const int ROA_IS_BITMAP;
 		static const int ROA_COLOR_DEPTH;
+		static const int ROA_METATILE_WIDTH;
+		static const int ROA_METATILE_HEIGHT;
 	};
 }
