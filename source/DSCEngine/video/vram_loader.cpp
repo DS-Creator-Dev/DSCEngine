@@ -9,7 +9,7 @@ using namespace DSC;
 
 void DSC::VramLoader::load(const AssetData* asset, void* dest, short* pal_indices, int map_width)
 {
-	Debug::log("Loading asset %s (%i,%i)", asset->is_bitmap()?"bitmap":"tileset", 8*asset->width, 8*asset->height);
+	//Debug::log("Loading asset %s (%i,%i)", asset->is_bitmap()?"bitmap":"tileset", 8*asset->width, 8*asset->height);
 	//Debug::log("MW = %i, AW = %i",map_width, 8*asset->width);
 	if(!asset->is_bitmap() || (asset->is_bitmap() && (map_width == 0 || map_width == 8*asset->width)))
 	{
@@ -49,7 +49,18 @@ void DSC::VramLoader::load(const AssetData* asset, void* dest, short* pal_indice
 		
 		int len = asset->get_gfx_length();
 		unsigned char* bufferx = new unsigned char[len];
+		
+		Debug::log("Bufferx = %X (len = %i)", bufferx, len);
+		
 		asset->extract(bufferx, 0, len);
+		
+		for(int i=0;i<len;i++)
+		{
+			if(bufferx[i])
+				bufferx[i] = pal_indices[bufferx[i]];
+		}		
+		
+		Debug::log("Extracted");
 		
 		int stride = asset->width * asset->get_color_depth();
 		
@@ -57,11 +68,13 @@ void DSC::VramLoader::load(const AssetData* asset, void* dest, short* pal_indice
 		unsigned char* buffer = (unsigned char*)bufferx;
 		for(int y=0;y<8*asset->height;y++)
 		{
+			//Debug::log("dma");
 			dmaCopy(buffer, dest8, stride);
 			buffer += stride;
 			dest8 += map_width * asset->get_color_depth() / 8;
 		}
 		
 		delete[] bufferx;
+		//Debug::log("fin");
 	}
 }

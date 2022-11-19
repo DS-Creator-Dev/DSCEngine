@@ -364,17 +364,70 @@ int DSC::PaletteManager::hashColor(const short& color)
 
 DSC::PaletteAllocationResult::~PaletteAllocationResult()
 {
+	Debug::log("~PaletteAllocationResult indices = %X", indices);
 	delete[] indices;
 }
 
-PaletteAllocationResult& DSC::PaletteAllocationResult::operator = (const PaletteAllocationResult& other)
+DSC::PaletteAllocationResult::PaletteAllocationResult(short* indices, int length, char color_depth, bool succeeded)
+	: indices(indices), length(length), color_depth(color_depth), succeeded(succeeded)
+{ }
+
+DSC::PaletteAllocationResult::PaletteAllocationResult(const PaletteAllocationResult& other)
 {
+	DSC::Debug::log("Called copy constructor");
 	if(this!=&other)
 	{
 		indices = other.indices==nullptr ? nullptr : new short[other.length];
 		length = other.length;
 		color_depth = other.color_depth;
-		succeeded = other.succeeded;	
+		succeeded = other.succeeded;			
+	}
+}
+
+DSC::PaletteAllocationResult::PaletteAllocationResult(PaletteAllocationResult&& other)
+{
+	DSC::Debug::log("Called move constructor");
+	if(this!=&other)
+	{
+		indices = other.indices; 
+		length = other.length;
+		color_depth = other.color_depth;
+		succeeded = other.succeeded;			
+		
+		other.indices = nullptr;
+		other.length = 0;
+		other.color_depth = 0;
+		other.succeeded = false;
+	}
+}
+
+PaletteAllocationResult& DSC::PaletteAllocationResult::operator = (const PaletteAllocationResult& other)
+{
+	DSC::Debug::log("Called copy assignment");
+	if(this!=&other)
+	{
+		indices = other.indices==nullptr ? nullptr : new short[other.length];
+		length = other.length;
+		color_depth = other.color_depth;
+		succeeded = other.succeeded;			
+	}
+	return *this;
+}
+
+PaletteAllocationResult& DSC::PaletteAllocationResult::operator = (PaletteAllocationResult&& other)
+{
+	DSC::Debug::log("Called move assignment");
+	if(this!=&other)
+	{
+		indices = other.indices; 
+		length = other.length;
+		color_depth = other.color_depth;
+		succeeded = other.succeeded;			
+		
+		other.indices = nullptr;
+		other.length = 0;
+		other.color_depth = 0;
+		other.succeeded = false;
 	}
 	return *this;
 }

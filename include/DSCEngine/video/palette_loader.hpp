@@ -27,6 +27,7 @@ namespace DSC
 		void unload(const AssetData* asset);
 		void unload(const AssetData* asset, int palette_index);
 				
+		static constexpr int ALLOC_MODE_DEFAULT = 0;
 		static constexpr int ALLOC_MODE_STANDARD_PALETTE = 1<<0;
 		static constexpr int ALLOC_MODE_EXTENDED_PALETTES = 1<<1;		
 		

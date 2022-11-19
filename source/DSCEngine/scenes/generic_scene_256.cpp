@@ -2,6 +2,7 @@
 
 #include "DSCEngine/video/measure.hpp"
 #include "DSCEngine/video/palette_manager.hpp"
+#include "DSCEngine/video/palette_loader.hpp"
 #include "DSCEngine/video/vram_loader.hpp"
 
 #include "DSCEngine/debug/assert.hpp"
@@ -31,6 +32,9 @@ struct DSC::GenericScene256::__privates__
 	
 	PaletteManager main_palette = PaletteManager(BG_PALETTE);
 	PaletteManager sub_palette = PaletteManager(BG_PALETTE_SUB);
+	
+	PaletteLoader main_palette_loader = PaletteLoader(&main_palette);
+	PaletteLoader sub_palette_loader = PaletteLoader(&sub_palette);
 };
 
 DSC::GenericScene256::GenericScene256()
@@ -254,17 +258,38 @@ void DSC::GenericScene256::load_assets()
 {
 	for(int i=0;i<8;i++)
 	{
+		Debug::log("For %i", i);
 		BackgroundRequirement& req = privates->bg_requirements[i];
 		if(req.enabled && req.src_asset!=nullptr)
 		{
-			PaletteManager* palette = i<4 ? &privates->main_palette : &privates->sub_palette;
+			/*PaletteManager* palette = i<4 ? &privates->main_palette : &privates->sub_palette;
 			PaletteAllocationResult palloc = palette->try_load(req.src_asset);
 			if(!palloc.succeeded)
 			{
 				fatal("Palette allocation failed");
 			}
 			Debug::log("%i %i", req.width, req.src_asset->width);
+			
+			Debug::log("Pal len = %i", palloc.length);
+			Debug::log("Pal ind = %X", palloc.indices);
+			VramLoader::load(req.src_asset, bgGetGfxPtr(i), palloc.indices, req.width);*/
+		
+			Debug::log("Here %i",i);
+			PaletteLoader* pal_loader = i<4 
+				? &privates->main_palette_loader 
+				: &privates->sub_palette_loader;			
+			pal_loader->set_default_allocation_mode(PaletteLoader::ALLOC_MODE_STANDARD_PALETTE);
+			//pal_loader->set_default_allocation_mode(ALLOC_MODE_EXTENDED_PALETTES);
+			PaletteAllocationResult palloc = pal_loader->try_load(req.src_asset, PaletteLoader::ALLOC_MODE_DEFAULT);
+			
+			nds_assert(palloc.succeeded, "Palette allocation failed");
+			
+			Debug::log("%i %i", req.width, req.src_asset->width);
+			Debug::log("Pal len = %i", palloc.length);
+			Debug::log("Pal ind = %X", palloc.indices);
 			VramLoader::load(req.src_asset, bgGetGfxPtr(i), palloc.indices, req.width);
+			Debug::log("OK?");					
+			Debug::log("End process %i", i);
 		}
 	}
 }

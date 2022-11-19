@@ -118,7 +118,12 @@ namespace DSC
 		
 		~PaletteAllocationResult(); // this is in order not to worry about the indices deallocation
 		
+		PaletteAllocationResult(short* indices = nullptr, int length = 0, char color_depth = 0, bool succeeded = false);
+		PaletteAllocationResult(const PaletteAllocationResult&);
+		PaletteAllocationResult(PaletteAllocationResult&&);
+		
 		PaletteAllocationResult& operator = (const PaletteAllocationResult& other);
+		PaletteAllocationResult& operator = (PaletteAllocationResult&& other);
 		
 		bool operator == (const PaletteAllocationResult& other) const;
 	};
