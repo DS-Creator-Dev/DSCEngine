@@ -3,8 +3,15 @@
 
 using namespace DSC;
 
-DSC::PaletteLoader::PaletteLoader(PaletteManager* standard_pal_mng) : standard_pal_mng(standard_pal_mng)
-{ }
+DSC::PaletteLoader::PaletteLoader()
+{
+	Debug::log("Created PaletteLoader %X (%i)", this, sizeof(PaletteLoader));
+}
+
+DSC::PaletteLoader::PaletteLoader(PaletteManager* standard_pal_mng) : PaletteLoader()
+{
+	this->standard_pal_mng = standard_pal_mng;
+}
 
 DSC::PaletteLoader::PaletteLoader(PaletteManager* standard_pal_mng, const Vector<PaletteManager*>& extended_pal_mng)
 	: PaletteLoader(standard_pal_mng)
@@ -130,4 +137,9 @@ PaletteAllocationResult DSC::PaletteLoader::try_alloc_extended(const AssetData* 
 		managed_assets[asset][pal_index]++;
 	}
 	return palloc;
+}
+
+DSC::PaletteLoader::~PaletteLoader()
+{
+	Debug::log("Destroyed PaletteLoader %X (%i)", this, sizeof(PaletteLoader));
 }

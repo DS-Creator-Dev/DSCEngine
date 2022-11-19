@@ -113,6 +113,9 @@ void DSC::Hardware::VramBank::enable() { BanksReg[bank_name-'A'] |= 0x80; }
 
 void DSC::Hardware::VramBank::disable() { BanksReg[bank_name-'A'] &= 0x7f; }
 
+bool DSC::Hardware::VramBank::is_enabled() const { return BanksReg[bank_name-'A'] & 0x80; }
+
+
 VramBank& DSC::Hardware::VramBank::save_state()
 {
 	backup = BanksReg[bank_name-'A'];
@@ -124,3 +127,11 @@ void DSC::Hardware::VramBank::restore()
 	BanksReg[bank_name-'A'] = backup;
 }
 	
+void*  DSC::Hardware::VramBank::lcd_offset() const
+{
+	if(bank_name<='E')
+		return (void*)(0x06800000 + 0x20000*(bank_name-'A'));
+	if(bank_name=='I')
+		return (void*)0x068A0000;
+	return (void*)(0x06890000 + 0x4000*(bank_name-'F'));
+}

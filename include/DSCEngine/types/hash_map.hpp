@@ -1,5 +1,6 @@
 #pragma once
 
+#include "DSCEngine/types/templates.hpp"
 #include "DSCEngine/types/vector.hpp"
 #include "DSCEngine/debug/assert.hpp"
 #include "DSCEngine/types/hash.hpp"
@@ -18,7 +19,7 @@ namespace DSC
 	public:
 		struct Entry { K key; V value;};
 	private:
-		Vector<Entry> container[S];
+		Vector<Vector<Entry>> container = Vector<Vector<Entry>>(S);
 		int _size = 0;
 	public:
 		/*! \brief checks if a key exists in the hash map
@@ -54,6 +55,15 @@ namespace DSC
 		
 		void clear();
 		
+		HashMap() = default;
+		HashMap(const HashMap<K,V,H,S>& other);
+		
+		HashMap(HashMap<K,V,H,S>&& other);
+		
+		
+		HashMap<K,V,H,S>& operator = (const HashMap<K,V,H,S>& other);
+		HashMap<K,V,H,S>& operator = (HashMap<K,V,H,S>&& other);
+		
 		// make map iterable
 		struct MapEntry { const int& key; int& value; };
 		
@@ -87,7 +97,7 @@ namespace DSC
 		
 		iterator begin() { return iterator(this, 0, 0);}
 		iterator end() { return iterator(this, S, 0);}
-	};	
+	};		
 }
 
 template<typename K, typename V, int (*H)(const K&), int S>
@@ -151,4 +161,40 @@ void DSC::HashMap<K,V,H,S>::remove_key(const K& key)
 			_size--;
 			return;
 		}			
+}
+
+template<typename K, typename V, int (*H)(const K&), int S>
+DSC::HashMap<K,V,H,S>::HashMap(const DSC::HashMap<K,V,H,S>& other)
+{
+	for(int i=0;i<S;i++)
+		container[i] = DSC::Vector<Entry>(other.container[i]);
+	_size = other._size;
+}
+
+template<typename K, typename V, int (*H)(const K&), int S>
+DSC::HashMap<K,V,H,S>::HashMap(DSC::HashMap<K,V,H,S>&& other)
+{
+	for(int i=0;i<S;i++)	
+		container[i] = DSC::_move_(other.container[i]);
+	_size = other._size;	
+	other._size = 0;
+}
+
+template<typename K, typename V, int (*H)(const K&), int S>
+DSC::HashMap<K,V,H,S>& DSC::HashMap<K,V,H,S>::operator = (const DSC::HashMap<K,V,H,S>& other)
+{
+	for(int i=0;i<S;i++)
+		container[i] = DSC::Vector<Entry>(other.container[i]);
+	_size = other._size;
+	return *this;
+}
+
+template<typename K, typename V, int (*H)(const K&), int S>
+DSC::HashMap<K,V,H,S>& DSC::HashMap<K,V,H,S>::operator = (DSC::HashMap<K,V,H,S>&& other)
+{
+	for(int i=0;i<S;i++)	
+		container[i] = DSC::_move_(other.container[i]);
+	_size = other._size;	
+	other._size = 0;
+	return *this;
 }

@@ -34,6 +34,7 @@ namespace
 
 DSC::PaletteManager::PaletteManager(void* palettes_offset)
 {		
+	Debug::log("Created PaletteManager %X (%i)", this, sizeof(PaletteManager));
 	validate_palette_manager_constructor_input((int)palettes_offset);
 	
 	pal_offset = palettes_offset;	
@@ -351,6 +352,7 @@ void DSC::PaletteManager::unload(const AssetData* asset)
 
 DSC::PaletteManager::~PaletteManager()
 {	
+	Debug::log("Destroyed PaletteManager %X (%i)", this, sizeof(PaletteManager));
 }
 
 int DSC::PaletteManager::hashColor(const short& color)

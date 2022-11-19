@@ -27,9 +27,17 @@ namespace DSC
 		int capacity;
 		void container_resize(int new_cap);
 	public:				
-		Vector(int cap=1);
+		Vector(int size=0);
 		Vector(const Vector<T>& vector);
 		Vector(Vector<T>&& vector);
+		
+		template <typename... Args>
+		Vector(T _first, Args... args)
+			: container(new T[sizeof...(args) + 1]{_first, args...}), 
+			_size(sizeof...(args) + 1),
+			capacity(sizeof...(args) + 1)
+		{}
+
 		
 		Vector<T>& operator = (Vector<T>&& vector);
 		Vector<T>& operator = (const Vector<T>& vector);
@@ -138,15 +146,16 @@ namespace DSC
 }
 
 template<typename T>
-DSC::Vector<T>::Vector(int cap)
+DSC::Vector<T>::Vector(int size)
 {	
-	_size = 0;
+	_size = size;	
+	int cap = size == 0 ? 1 : size;
 	if(sizeof(T)&1)
 	{
 		cap>>=1; cap++; cap<<=1; // assure capacity is 16-bit aligned
-	}
+	}	
 	capacity = cap;	
-	container = new T[cap];		
+	container = new T[cap]();
 }
 
 template<typename T>

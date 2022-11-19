@@ -14,7 +14,11 @@ namespace DSC::Hardware
 		inline static short* const BgVram     = (short* const)0x06000000;
 		inline static short* const ObjVram    = (short* const)0x06400000;
 		
-		//inline static ExtendedPalette* const BgExtPalette = (ExtendedPalette* const);
+		ExtendedPalette* BgExtendedPalette();
+		ExtendedPalette* ObjExtendedPalette();		
+		
+		ExtendedPalette* BgExtendedPalette(int index);
+		ExtendedPalette* ObjExtendedPalette(int index);		
 	}
 	
 	namespace SubEngine
@@ -26,6 +30,12 @@ namespace DSC::Hardware
 		
 		inline static short* const BgVram     = (short* const)0x06200000;
 		inline static short* const ObjVram    = (short* const)0x06600000;		
+		
+		ExtendedPalette* BgExtendedPalette();
+		ExtendedPalette* ObjExtendedPalette();
+		
+		ExtendedPalette* BgExtendedPalette(int index);
+		ExtendedPalette* ObjExtendedPalette(int index);
 	}	
 	
 	extern char* const BanksReg;
@@ -61,9 +71,12 @@ namespace DSC::Hardware
 		
 		void enable();
 		void disable();
+		bool is_enabled() const;
 		
 		VramBank& save_state();
 		void restore();
+		
+		void* lcd_offset() const;
 	};
 	
 }

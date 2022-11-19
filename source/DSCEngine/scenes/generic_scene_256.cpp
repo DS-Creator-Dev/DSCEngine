@@ -10,9 +10,12 @@
 
 #include "DSCEngine/system/hardware.hpp"
 
+#include "DSCEngine/utils/math.hpp"
+
 #include <nds.h>
 
 using namespace DSC;
+using namespace DSC::Hardware;
 
 namespace
 {
@@ -34,12 +37,16 @@ struct DSC::GenericScene256::__privates__
 	
 	PaletteManager main_palette = PaletteManager(Hardware::MainEngine::BgPalette);
 	PaletteManager sub_palette = PaletteManager(Hardware::SubEngine::BgPalette);
-
 	
-	
+	PaletteLoader palette_loader[8];	
 	
 	PaletteLoader main_palette_loader = PaletteLoader(&main_palette);
 	PaletteLoader sub_palette_loader = PaletteLoader(&sub_palette);
+	
+	__privates__() 
+	{
+		Debug::log("Created __privates__ %X (%i)", this, sizeof(__privates__));;
+	}	
 	
 	
 };
@@ -47,6 +54,7 @@ struct DSC::GenericScene256::__privates__
 DSC::GenericScene256::GenericScene256()
 {
 	privates = new __privates__();
+	Debug::log("Created privates!!!!");
 }
 
 void DSC::GenericScene256::init()
@@ -70,7 +78,7 @@ void DSC::GenericScene256::solve_map_requirements_main()
 	int* tile_base = new int[4];
 	int* map_base = new int[4];	
 	
-	int bmp_cnt = 0;
+	int bmp_cnt = 0;	
 	
 	// solve main
 	for(int i=0;i<4;i++)
@@ -144,9 +152,13 @@ void DSC::GenericScene256::solve_map_requirements_main()
 	}	
 	else videoSetMode(MODE_0_2D);
 	
+	
+	Vector<int> bg_use_ext;
+	
 	// init backgrounds	
 	for(int i=0;i<4;i++)
 	{
+		//privates->palette_loader[4+i] = PaletteLoader(&privates->sub_palette);
 		BackgroundRequirement& req = privates->bg_requirements[i];
 		if(req.enabled)
 		{
@@ -154,8 +166,28 @@ void DSC::GenericScene256::solve_map_requirements_main()
 			BgType bg_type = (BgType)((config>>16)&0xFFFF);
 			BgSize bg_size = (BgSize)(config & 0xFFFF);
 			bgInit(i, bg_type, bg_size, tile_base[i], map_base[i]);	
+			
+			if(!req.is_bitmap && req.color_depth==8)
+				bg_use_ext.push_back(i);
 		}
 	}		
+	
+	/*int ext_pal_index = 0;
+	if(bg_use_ext.size()>0)
+	{
+		// how many extended palettes should each eligible background use
+		int palcnt = max(16, 32 / bg_use_ext.size());
+		
+		for(int i=0;i<bg_use_ext.size();i++)
+		{
+			for(int j=0;j<palcnt;j++)
+			{
+				privates->ext_palettes[i].push_back(new PaletteManager(MainEngine::BgExtendedPalette(ext_pal_index++)));
+			}
+			// update palette loader for that background
+			privates->palette_loader[i] = PaletteLoader(&privates->main_palette, privates->ext_palettes[i]);
+		}
+	}*/	
 	
 	delete[] tile_base;
 	delete[] map_base;
@@ -244,9 +276,12 @@ void DSC::GenericScene256::solve_map_requirements_sub()
 	}	
 	else videoSetModeSub(MODE_0_2D);
 	
+	
+	Vector<int> bg_use_ext;
 	// init backgrounds	
 	for(int i=0;i<4;i++)
 	{
+		//privates->palette_loader[4+i] = PaletteLoader(&privates->sub_palette);
 		BackgroundRequirement& req = privates->bg_requirements[4+i];
 		if(req.enabled)
 		{
@@ -254,8 +289,29 @@ void DSC::GenericScene256::solve_map_requirements_sub()
 			BgType bg_type = (BgType)((config>>16)&0xFFFF);
 			BgSize bg_size = (BgSize)(config & 0xFFFF);
 			bgInitSub(i, bg_type, bg_size, tile_base[i], map_base[i]);
+			
+			if(!req.is_bitmap && req.color_depth==8)
+				bg_use_ext.push_back(i);
+		}		
+	}	
+
+
+	/*int ext_pal_index = 0;
+	if(bg_use_ext.size()>0)
+	{
+		// how many extended palettes should each eligible background use
+		int palcnt = max(16, 32 / bg_use_ext.size());
+		
+		for(int i=0;i<bg_use_ext.size();i++)
+		{
+			for(int j=0;j<palcnt;j++)
+			{
+				privates->ext_palettes[4+i].push_back(new PaletteManager(SubEngine::BgExtendedPalette(ext_pal_index++)));
+			}
+			// update palette loader for that background
+			privates->palette_loader[4+i] = PaletteLoader(&privates->sub_palette, privates->ext_palettes[4+i]);
 		}
-	}		
+	}*/		
 	
 	delete[] tile_base;
 	delete[] map_base;
@@ -502,8 +558,6 @@ int DSC::GenericScene256::validate_bg_size(int w, int h, int color_depth, bool i
 	return size | (type<<16);
 	
 }
-
-using namespace DSC::Hardware;
 
 void DSC::GenericScene256::set_banks()
 {
