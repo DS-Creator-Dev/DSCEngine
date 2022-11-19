@@ -67,7 +67,7 @@ void DSC::PaletteLoader::unload(const AssetData* asset)
 	managed_assets.remove_key(asset);
 }
 
-/*void DSC::PaletteLoader::unload(const AssetData* asset, int palette_index)
+void DSC::PaletteLoader::unload(const AssetData* asset, int palette_index)
 {
 	if(!managed_assets.contains_key(asset))
 	{
@@ -83,9 +83,19 @@ void DSC::PaletteLoader::unload(const AssetData* asset)
 		return;
 	
 	int val = managed_assets[asset][palette_index];
-	
-	
-}*/
+	if(val>0)
+	{
+		val--;
+		PaletteManager* pal_mng = palette_index == -1 ? standard_pal_mng : extended_pal_mng[palette_index];
+		pal_mng->unload(asset);
+	}
+	if(val==0)
+		managed_assets[asset].remove_key(palette_index);
+	else
+		managed_assets[asset][palette_index] = val;
+	if(managed_assets[asset].size()==0)
+		managed_assets.remove_key(asset);	
+}
 	
 	
 PaletteAllocationResult DSC::PaletteLoader::try_alloc_standard(const AssetData* asset)

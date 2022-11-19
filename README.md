@@ -14,7 +14,7 @@
 
 2.  Make it
 
-    `make -f Makefile`
+    `make clean & make -f Makefile`
 
 ## Using DSCEngine to compile other dependent projects
 

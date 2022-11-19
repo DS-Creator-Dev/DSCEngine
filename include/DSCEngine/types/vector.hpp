@@ -352,6 +352,6 @@ template<typename T>
 T& DSC::Vector<T>::back()
 {
 	callstack_call
-	assert(size()>0);
+	nds_assert(size()>0);
 	callstack_ret container[size()-1];
 }
