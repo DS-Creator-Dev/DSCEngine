@@ -8,6 +8,8 @@
 #include "DSCEngine/debug/assert.hpp"
 #include "DSCEngine/debug/error.hpp"
 
+#include "DSCEngine/system/hardware.hpp"
+
 #include <nds.h>
 
 using namespace DSC;
@@ -30,11 +32,16 @@ struct DSC::GenericScene256::__privates__
 {
 	BackgroundRequirement bg_requirements[8];
 	
-	PaletteManager main_palette = PaletteManager(BG_PALETTE);
-	PaletteManager sub_palette = PaletteManager(BG_PALETTE_SUB);
+	PaletteManager main_palette = PaletteManager(Hardware::MainEngine::BgPalette);
+	PaletteManager sub_palette = PaletteManager(Hardware::SubEngine::BgPalette);
+
+	
+	
 	
 	PaletteLoader main_palette_loader = PaletteLoader(&main_palette);
 	PaletteLoader sub_palette_loader = PaletteLoader(&sub_palette);
+	
+	
 };
 
 DSC::GenericScene256::GenericScene256()
@@ -257,39 +264,23 @@ void DSC::GenericScene256::solve_map_requirements_sub()
 void DSC::GenericScene256::load_assets()
 {
 	for(int i=0;i<8;i++)
-	{
-		Debug::log("For %i", i);
+	{		
 		BackgroundRequirement& req = privates->bg_requirements[i];
 		if(req.enabled && req.src_asset!=nullptr)
-		{
-			/*PaletteManager* palette = i<4 ? &privates->main_palette : &privates->sub_palette;
-			PaletteAllocationResult palloc = palette->try_load(req.src_asset);
-			if(!palloc.succeeded)
-			{
-				fatal("Palette allocation failed");
-			}
-			Debug::log("%i %i", req.width, req.src_asset->width);
-			
-			Debug::log("Pal len = %i", palloc.length);
-			Debug::log("Pal ind = %X", palloc.indices);
-			VramLoader::load(req.src_asset, bgGetGfxPtr(i), palloc.indices, req.width);*/
-		
-			Debug::log("Here %i",i);
+		{						
 			PaletteLoader* pal_loader = i<4 
-				? &privates->main_palette_loader 
-				: &privates->sub_palette_loader;			
+				? &privates->main_palette_loader
+				: &privates->sub_palette_loader;
 			pal_loader->set_default_allocation_mode(PaletteLoader::ALLOC_MODE_STANDARD_PALETTE);
 			//pal_loader->set_default_allocation_mode(ALLOC_MODE_EXTENDED_PALETTES);
 			PaletteAllocationResult palloc = pal_loader->try_load(req.src_asset, PaletteLoader::ALLOC_MODE_DEFAULT);
 			
 			nds_assert(palloc.succeeded, "Palette allocation failed");
 			
-			Debug::log("%i %i", req.width, req.src_asset->width);
-			Debug::log("Pal len = %i", palloc.length);
-			Debug::log("Pal ind = %X", palloc.indices);
-			VramLoader::load(req.src_asset, bgGetGfxPtr(i), palloc.indices, req.width);
-			Debug::log("OK?");					
-			Debug::log("End process %i", i);
+			//Debug::log("%i %i", req.width, req.src_asset->width);
+			//Debug::log("Pal len = %i", palloc.length);
+			//Debug::log("Pal ind = %X", palloc.indices);
+			VramLoader::load(req.src_asset, bgGetGfxPtr(i), palloc.indices, req.width);			
 		}
 	}
 }
@@ -512,15 +503,17 @@ int DSC::GenericScene256::validate_bg_size(int w, int h, int color_depth, bool i
 	
 }
 
+using namespace DSC::Hardware;
+
 void DSC::GenericScene256::set_banks()
 {
-	vramSetBankA(VRAM_A_MAIN_BG_0x06000000);
-	vramSetBankB(VRAM_B_MAIN_BG_0x06020000);
-	vramSetBankC(VRAM_C_SUB_BG_0x06200000);
-	vramSetBankD(VRAM_D_SUB_SPRITE);
-	vramSetBankE(VRAM_E_MAIN_SPRITE);
-	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
-	vramSetBankG(VRAM_G_BG_EXT_PALETTE_SLOT23);
-	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);
-	vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
+	VramBank('A').main().background().vram()       .slot(0).config();	
+	VramBank('B').main().background().vram()       .slot(1).config();
+	VramBank('C').sub() .background().vram()               .config();	
+	VramBank('D').sub() .sprite()    .vram()               .config();	
+	VramBank('E').main().sprite()    .vram()               .config();	
+	VramBank('F').main().sprite()    .ext_palette()        .config();
+	VramBank('G').main().background().ext_palette().slot(1).config();	
+	VramBank('H').sub() .background().ext_palette()        .config();
+	VramBank('I').sub() .sprite()    .ext_palette()        .config();
 }
