@@ -51,7 +51,51 @@ namespace DSC
 		void remove_key(const K& key);
 		
 		inline int size() const {return _size;}
+		
+		void clear();
+		
+		// make map iterable
+		struct MapEntry { const int& key; int& value; };
+		
+		class iterator
+		{
+		private:
+			HashMap<K,V,H,S>* hmap;
+			int h, i;
+		public:
+			iterator(HashMap<K,V,H,S>* hmap, int h=0, int i=0) : hmap(hmap), h(h), i(i) {}
+			iterator operator ++() 
+			{
+				if(h>=S) return *this;
+				i++;
+				if(i>=hmap->container[h].size()) { i=0; h++; }
+				return *this;
+			}
+			bool operator != (const iterator& other)
+			{
+				if(hmap != other.hmap) return false;
+				if(h>=S && other.h>=S) return true;
+				return h==other.h && i==other.i;
+			}
+			MapEntry operator*() 
+			{
+				nds_assert(h<S);
+				nds_assert(i<hmap->container[h].size());
+				return {hmap->container[h][i].key, hmap->container[h][i].value};
+			}
+		};
+		
+		iterator begin() { return iterator(this, 0, 0);}
+		iterator end() { return iterator(this, S, 0);}
 	};	
+}
+
+template<typename K, typename V, int (*H)(const K&), int S>
+void DSC::HashMap<K,V,H,S>::clear()
+{
+	for(int h=0;h<S;h++)
+		container[h].reset();
+	_size=0;
 }
 
 template<typename K, typename V, int (*H)(const K&), int S>

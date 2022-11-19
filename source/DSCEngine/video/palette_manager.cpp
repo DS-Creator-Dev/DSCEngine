@@ -366,3 +366,28 @@ DSC::PaletteAllocationResult::~PaletteAllocationResult()
 {
 	delete[] indices;
 }
+
+PaletteAllocationResult& DSC::PaletteAllocationResult::operator = (const PaletteAllocationResult& other)
+{
+	if(this!=&other)
+	{
+		indices = other.indices==nullptr ? nullptr : new short[other.length];
+		length = other.length;
+		color_depth = other.color_depth;
+		succeeded = other.succeeded;	
+	}
+	return *this;
+}
+
+bool DSC::PaletteAllocationResult::operator == (const PaletteAllocationResult& other) const
+{
+	if(length!=other.length) return false;
+	if(color_depth!=other.color_depth) return false;
+	if(succeeded!=other.succeeded) return false;
+	if(indices == other.indices) return true;
+	for(int i=0;i<length;i++)
+	{
+		if(indices[i]!=other.indices[i]) return false;
+	}
+	return true;
+}

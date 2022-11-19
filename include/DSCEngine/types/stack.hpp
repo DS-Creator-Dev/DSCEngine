@@ -17,7 +17,7 @@ namespace DSC
 			T value;
 			Item* next;
 		};
-		Item* top_item = NULL;
+		Item* top_item = nullptr;
 	public:				
 		Stack() = default;
 		Stack(Stack<T>&& stack);
@@ -82,21 +82,21 @@ template<typename T>
 DSC::Stack<T>::Stack(DSC::Stack<T>&& stack) 
 {
 	top_item = stack.top_item;	
-	stack.top_item = NULL;
+	stack.top_item = nullptr;
 }
 
 template<typename T>
 DSC::Stack<T>& DSC::Stack<T>::operator = (DSC::Stack<T>&& stack)
 {
 	top_item = stack.top_item;	
-	stack.top_item = NULL;
+	stack.top_item = nullptr;
 	return *this;
 }
 
 template<typename T>
 bool DSC::Stack<T>::is_empty() const
 {
-	return top_item == NULL;
+	return top_item == nullptr;
 }
 
 template<typename T>
@@ -129,7 +129,7 @@ DSC::Stack<T>::~Stack()
 template<typename T>
 void DSC::Stack<T>::clear()
 {
-	while(top_item!=NULL) 
+	while(top_item!=nullptr) 
 		pop();
 }
 

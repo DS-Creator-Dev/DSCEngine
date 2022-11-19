@@ -117,5 +117,9 @@ namespace DSC
 		bool succeeded;		
 		
 		~PaletteAllocationResult(); // this is in order not to worry about the indices deallocation
+		
+		PaletteAllocationResult& operator = (const PaletteAllocationResult& other);
+		
+		bool operator == (const PaletteAllocationResult& other) const;
 	};
 }

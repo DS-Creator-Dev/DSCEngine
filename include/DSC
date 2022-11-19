@@ -9,6 +9,8 @@
 #include "DSCEngine/resources/readonly_data.hpp"
 #include "DSCEngine/resources/asset_data.hpp"
 
+#include "DSCEngine/sprites/sprite.hpp"
+
 #include "DSCEngine/scenes/scene.hpp"
 #include "DSCEngine/scenes/generic_scene_256.hpp"
 

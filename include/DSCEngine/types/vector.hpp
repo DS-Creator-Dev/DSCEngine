@@ -71,12 +71,12 @@ namespace DSC
 		T& back();
 		
 		/*!
-		* \brief Finds an item in the vector
+		* \brief Finds the position of an item in the vector
 		* 
 		* \param [in] item Item to be found
 		* \return position of the first occurence of the item if it was found, -1 otherwise		
 		 */
-		int find(const T& item) const;
+		int index_of(const T& item) const;
 		
 		/*!
 		* \brief Removes the first occurence of an element from the vector
@@ -292,7 +292,7 @@ const T& DSC::Vector<T>::get_at(int index) const
 }
 
 template<typename T>
-int DSC::Vector<T>::find(const T& item) const
+int DSC::Vector<T>::index_of(const T& item) const
 {
 	for(int i=0;i<_size;i++)
 	{

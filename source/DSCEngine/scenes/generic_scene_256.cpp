@@ -7,6 +7,8 @@
 #include "DSCEngine/debug/assert.hpp"
 #include "DSCEngine/debug/error.hpp"
 
+#include <nds.h>
+
 using namespace DSC;
 
 namespace

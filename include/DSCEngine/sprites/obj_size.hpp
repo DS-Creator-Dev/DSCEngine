@@ -1,5 +1,7 @@
 #pragma once
 
+#include "DSCEngine/types/size.hpp"
+
 namespace DSC
 {
 	/*! \enum ObjSize
@@ -20,4 +22,25 @@ namespace DSC
 		SIZE_16x32 = 10, //!< Sprite size 16x32 
 		SIZE_32x64 = 11  //!< Sprite size 32x64 
 	};	
+	
+	inline static Size<int> obj_get_size(ObjSize objsize)
+	{
+		int val = (int)objsize;
+		int shape = val/4;
+		int sz = val & 3;
+		
+		if(shape==0)
+		{
+			sz = 8<<sz;
+			return {sz, sz};
+		}
+			
+		int d1 = sz<2 ? sz+1 : sz;
+		int d2 = sz<1 ? sz+1 : sz;
+		
+		if(shape==1)
+			return {8*(1<<d1), 4<<d2};
+		else
+			return {4<<d2, 8*(1<<d1)};		
+	}	
 }

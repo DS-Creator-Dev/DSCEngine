@@ -3,8 +3,6 @@
 #include "DSCEngine/debug/log.hpp"
 #include "DSCEngine/testmod.hpp"
 
-#include <nds.h>
-
 namespace DSC
 {
 	void fatal_freeze(const char* message, ...);
