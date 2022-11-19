@@ -111,7 +111,7 @@ PaletteAllocationResult DSC::PaletteLoader::try_alloc_standard(const AssetData* 
 {
 	if(standard_pal_mng==nullptr)
 	{
-		DSC::Debug::log("Extended palette manager was null");
+		DSC::Debug::log("Standard palette manager is null");
 		return {nullptr, 0, 0, false};
 	}
 	PaletteAllocationResult palloc = standard_pal_mng->try_load(asset);
@@ -128,7 +128,7 @@ PaletteAllocationResult DSC::PaletteLoader::try_alloc_extended(const AssetData* 
 	PaletteManager* ext_pal_mng = extended_pal_mng[pal_index];
 	if(ext_pal_mng==nullptr)
 	{
-		DSC::Debug::warn("Extended palette manager was null");
+		DSC::Debug::warn("Standard palette manager is null");
 		return {nullptr, 0, 0, false};
 	}
 	PaletteAllocationResult palloc = ext_pal_mng->try_load(asset);

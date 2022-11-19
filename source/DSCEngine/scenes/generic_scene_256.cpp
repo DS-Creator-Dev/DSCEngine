@@ -38,6 +38,7 @@ struct DSC::GenericScene256::__privates__
 	PaletteManager main_palette = PaletteManager(Hardware::MainEngine::BgPalette);
 	PaletteManager sub_palette = PaletteManager(Hardware::SubEngine::BgPalette);
 	
+	Vector<PaletteManager*> ext_palettes[8];
 	PaletteLoader palette_loader[8];	
 	
 	PaletteLoader main_palette_loader = PaletteLoader(&main_palette);
@@ -158,7 +159,7 @@ void DSC::GenericScene256::solve_map_requirements_main()
 	// init backgrounds	
 	for(int i=0;i<4;i++)
 	{
-		//privates->palette_loader[4+i] = PaletteLoader(&privates->sub_palette);
+		privates->palette_loader[i] = PaletteLoader(&privates->main_palette);
 		BackgroundRequirement& req = privates->bg_requirements[i];
 		if(req.enabled)
 		{
@@ -172,7 +173,7 @@ void DSC::GenericScene256::solve_map_requirements_main()
 		}
 	}		
 	
-	/*int ext_pal_index = 0;
+	int ext_pal_index = 0;
 	if(bg_use_ext.size()>0)
 	{
 		// how many extended palettes should each eligible background use
@@ -187,7 +188,7 @@ void DSC::GenericScene256::solve_map_requirements_main()
 			// update palette loader for that background
 			privates->palette_loader[i] = PaletteLoader(&privates->main_palette, privates->ext_palettes[i]);
 		}
-	}*/	
+	}	
 	
 	delete[] tile_base;
 	delete[] map_base;
@@ -281,7 +282,7 @@ void DSC::GenericScene256::solve_map_requirements_sub()
 	// init backgrounds	
 	for(int i=0;i<4;i++)
 	{
-		//privates->palette_loader[4+i] = PaletteLoader(&privates->sub_palette);
+		privates->palette_loader[4+i] = PaletteLoader(&privates->sub_palette);
 		BackgroundRequirement& req = privates->bg_requirements[4+i];
 		if(req.enabled)
 		{
@@ -296,7 +297,7 @@ void DSC::GenericScene256::solve_map_requirements_sub()
 	}	
 
 
-	/*int ext_pal_index = 0;
+	int ext_pal_index = 0;
 	if(bg_use_ext.size()>0)
 	{
 		// how many extended palettes should each eligible background use
@@ -311,7 +312,7 @@ void DSC::GenericScene256::solve_map_requirements_sub()
 			// update palette loader for that background
 			privates->palette_loader[4+i] = PaletteLoader(&privates->sub_palette, privates->ext_palettes[4+i]);
 		}
-	}*/		
+	}
 	
 	delete[] tile_base;
 	delete[] map_base;
@@ -323,12 +324,12 @@ void DSC::GenericScene256::load_assets()
 	{		
 		BackgroundRequirement& req = privates->bg_requirements[i];
 		if(req.enabled && req.src_asset!=nullptr)
-		{						
-			PaletteLoader* pal_loader = i<4 
-				? &privates->main_palette_loader
-				: &privates->sub_palette_loader;
+		{			
+			Debug::log("Loading %i", i);
+			
+			PaletteLoader* pal_loader = &privates->palette_loader[i];
+			
 			pal_loader->set_default_allocation_mode(PaletteLoader::ALLOC_MODE_STANDARD_PALETTE);
-			//pal_loader->set_default_allocation_mode(ALLOC_MODE_EXTENDED_PALETTES);
 			PaletteAllocationResult palloc = pal_loader->try_load(req.src_asset, PaletteLoader::ALLOC_MODE_DEFAULT);
 			
 			nds_assert(palloc.succeeded, "Palette allocation failed");
