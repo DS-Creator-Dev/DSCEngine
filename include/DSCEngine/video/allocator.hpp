@@ -15,6 +15,8 @@ namespace DSC
 		int base_length;		
 		int free_space_head;
 	public:
+		Allocator();
+	
 		/*! \brief Creates a new allocator instance
 		 *	\param [in] offset base segment offset
 		 *	\param [in] length base segment length
@@ -38,5 +40,8 @@ namespace DSC
 		void release(void* address);		
 		
 		~Allocator();
+		
+		static Allocator defaultMainSpriteVram();
+		static Allocator defaultSubSpriteVram();
 	};
 }

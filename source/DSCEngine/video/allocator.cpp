@@ -1,5 +1,6 @@
 #include "DSCEngine/video/allocator.hpp"
 #include "DSCEngine/debug/log.hpp"
+#include "DSCEngine/debug/assert.hpp"
 
 #include "allocs.h"
 #include "allocs_table.h"
@@ -54,20 +55,25 @@ struct alloc_info
 	}
 };
 
+DSC::Allocator::Allocator() : base_offset(0), base_length(0), free_space_head(0)
+{
+	id = 0;	
+}
 
 DSC::Allocator::Allocator(int offset, int length)
 	: base_offset(offset), base_length(length), free_space_head(offset)
 {
 	if(!allocs_table_inited)
 	{
+		Debug::log("Initing allocs table");
 		init_allocs_table();
 	}
+	Debug::log("Writing base offset");
 	alloc_info::at(base_offset)->write(length, nullptr);
+	Debug::log("Generating id");
 	int gen_id = create_alloc_id();
-	if(gen_id == 0)
-	{
-		Debug::error("Allocators limit exceeded");		
-	}	
+	Debug::log("Got id = %i", gen_id);
+	nds_assert(gen_id!=0, "Allocators limit exceeded");
 	id = gen_id;
 }
 
@@ -78,6 +84,7 @@ int address_stamp(int base, int offset, int length)
 
 void* DSC::Allocator::reserve(int size, int desired_offset)
 {
+	if(id==0) return nullptr;
 	if(size==0) return nullptr;
 	
 	size = ((size+31)/32)*32; // round size to its upper nearest multiple of 32
@@ -146,6 +153,7 @@ void* DSC::Allocator::reserve(int size, int desired_offset)
 		
 void DSC::Allocator::release(void* address)
 {
+	if(id==0) return;
 	if(address==nullptr) return;
 	int offset = (int)address;
 	
@@ -218,5 +226,19 @@ void DSC::Allocator::release(void* address)
 
 DSC::Allocator::~Allocator()
 {
+	if(id==0) return;
 	remove_allocs_by_id(id);
+}
+
+
+#include "DSCEngine/system/hardware.hpp"
+
+Allocator DSC::Allocator::defaultMainSpriteVram()
+{
+	return Allocator((int)Hardware::MainEngine::ObjVram, 64*1024);
+}
+
+Allocator DSC::Allocator::defaultSubSpriteVram()
+{
+	return Allocator((int)Hardware::SubEngine::ObjVram, 128*1024);
 }

@@ -1,25 +1,24 @@
 #include "allocs_table.h"
+#include "DSCEngine/debug/log.hpp"
 
-const int allocs_count = 4096;
-__attribute__((section(".iwram.alloc_buffer"))) int allocs_table_stamps[allocs_count];
-__attribute__((section(".iwram.alloc_buffer"))) unsigned char allocs_table_ids[allocs_count];
+constexpr int allocs_count = 4096;
+/*__attribute__((section(".iwram.alloc_buffer")))*/ int allocs_table_stamps[allocs_count];
+/*__attribute__((section(".iwram.alloc_buffer")))*/ unsigned char allocs_table_ids[allocs_count];
 
 int allocs_table_free_head;
-static const int FREE_POS = 0x80000000;
-static const int FREE_END = ~FREE_POS;
+static constexpr int FREE_POS = 0x80000000;
+static constexpr int FREE_END = ~FREE_POS;
 
 bool allocs_table_inited = false;
 
 int last_added_pos;
 
-//#include <stdio.h>
-
 void init_allocs_table()
 {
 	for(int i=0;i<allocs_count-1;i++)
-	{
+	{		
 		allocs_table_stamps[i] = FREE_POS | (i+1);
-	}
+	}	
 	allocs_table_stamps[allocs_count-1] = FREE_END;
 	allocs_table_free_head = 0;
 	last_added_pos = 0;

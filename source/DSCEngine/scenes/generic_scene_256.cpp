@@ -39,17 +39,7 @@ struct DSC::GenericScene256::__privates__
 	PaletteManager sub_palette = PaletteManager(Hardware::SubEngine::BgPalette);
 	
 	Vector<PaletteManager*> ext_palettes[8];
-	PaletteLoader palette_loader[8];	
-	
-	PaletteLoader main_palette_loader = PaletteLoader(&main_palette);
-	PaletteLoader sub_palette_loader = PaletteLoader(&sub_palette);
-	
-	__privates__() 
-	{
-		Debug::log("Created __privates__ %X (%i)", this, sizeof(__privates__));;
-	}	
-	
-	
+	PaletteLoader palette_loader[8];			
 };
 
 DSC::GenericScene256::GenericScene256()

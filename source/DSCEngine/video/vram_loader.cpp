@@ -8,21 +8,17 @@
 using namespace DSC;
 
 void DSC::VramLoader::load(const AssetData* asset, void* dest, short* pal_indices, int map_width)
-{
-	//Debug::log("Loading asset %s (%i,%i)", asset->is_bitmap()?"bitmap":"tileset", 8*asset->width, 8*asset->height);
-	//Debug::log("MW = %i, AW = %i",map_width, 8*asset->width);
+{	
+	nds_assert(asset!=nullptr);
 	if(!asset->is_bitmap() || (asset->is_bitmap() && (map_width == 0 || map_width == 8*asset->width)))
-	{
-		//Debug::log("first");
+	{		
 		if(pal_indices==nullptr || asset->get_color_depth()!=8)
 		{					
 			asset->extract(dest, 0, asset->get_gfx_length());									
 			return;
 		}		
-		int len = asset->get_gfx_length();
-		//Debug::log("LEN = %i", len);
-		unsigned char* buffer = new unsigned char[len];
-		//Debug::log("Allocated");
+		int len = asset->get_gfx_length();		
+		unsigned char* buffer = new unsigned char[len];		
 		
 		asset->extract(buffer, 0, len);
 		
@@ -30,27 +26,20 @@ void DSC::VramLoader::load(const AssetData* asset, void* dest, short* pal_indice
 		{
 			if(buffer[i])
 				buffer[i] = pal_indices[buffer[i]];
-		}		
+		}				
 		
-		//Debug::log("Buffered created");
-		
-		dmaCopy(buffer, dest, len);	// <-- beware for bugs idk	
-		
-		//Debug::log("dma");
+		dmaCopy(buffer, dest, len);	// <-- beware for bugs idk			
 			
 		delete[] buffer;
 		
 		//Debug::log("fin");
 	}
 	else // if(asset->is_bitmap() && 8*asset->width != map_width
-	{		
-		//Debug::log("Here?");
+	{				
 		nds_assert(8*asset->width < map_width);
 		
 		int len = asset->get_gfx_length();
-		unsigned char* bufferx = new unsigned char[len];
-		
-		Debug::log("Bufferx = %X (len = %i)", bufferx, len);
+		unsigned char* bufferx = new unsigned char[len];		
 		
 		asset->extract(bufferx, 0, len);
 		
@@ -58,23 +47,91 @@ void DSC::VramLoader::load(const AssetData* asset, void* dest, short* pal_indice
 		{
 			if(bufferx[i])
 				bufferx[i] = pal_indices[bufferx[i]];
-		}		
-		
-		Debug::log("Extracted");
+		}				
 		
 		int stride = asset->width * asset->get_color_depth();
 		
 		unsigned char* dest8 = (unsigned char*)dest;
 		unsigned char* buffer = (unsigned char*)bufferx;
 		for(int y=0;y<8*asset->height;y++)
-		{
-			//Debug::log("dma");
+		{			
 			dmaCopy(buffer, dest8, stride);
 			buffer += stride;
 			dest8 += map_width * asset->get_color_depth() / 8;
 		}
 		
-		delete[] bufferx;
-		//Debug::log("fin");
+		delete[] bufferx;		
+	}	
+}
+
+void DSC::VramLoader::load(const AssetData* asset, int offset, int size, void* dest, short* pal_indices, int map_width)
+{
+	nds_assert(asset!=nullptr);
+	nds_assert(offset+size<=asset->get_gfx_length());
+	
+	if(!asset->is_bitmap() || (asset->is_bitmap() && (map_width == 0 || map_width == 8*asset->width)))
+	{		
+		if(pal_indices==nullptr || asset->get_color_depth()!=8)
+		{					
+			asset->extract(dest, offset, size);
+			return;
+		}				
+		nds_assert(offset+size<asset->get_gfx_length());
+		unsigned char* buffer = new unsigned char[size];
+		
+		asset->extract(buffer, offset, size);
+		
+		for(int i=0;i<size;i++)
+		{
+			if(buffer[i])
+				buffer[i] = pal_indices[buffer[i]];
+		}				
+		
+		dmaCopy(buffer, dest, size);	// <-- beware for bugs idk			
+			
+		delete[] buffer;
+				
+	}
+	else // if(asset->is_bitmap() && 8*asset->width != map_width
+	{				
+		nds_assert(false, "Partial stride-dependent bitmap loading is not supported");
+		/*nds_assert(8*asset->width < map_width);
+				
+		unsigned char* bufferx = new unsigned char[size];
+		
+		asset->extract(bufferx, 0, size);
+		
+		for(int i=0;i<size;i++)
+		{
+			if(bufferx[i])
+				bufferx[i] = pal_indices[bufferx[i]];
+		}				
+		
+		int stride = asset->width * asset->get_color_depth();
+		
+		unsigned char* dest8 = (unsigned char*)dest;
+		unsigned char* buffer = (unsigned char*)bufferx;						
+		
+		for(int y=0;y<8*asset->height;y++)
+		{			
+			dmaCopy(buffer, dest8, stride);
+			buffer += stride;
+			dest8 += map_width * asset->get_color_depth() / 8;
+		}
+		
+		delete[] bufferx;*/
+	}	
+}
+
+void DSC::VramLoader::clear(void* dest, int size)
+{
+	nds_assert(size%2 == 0);
+	short* dest16 = (short*) dest;
+	const int zero = 0;
+	for(int i=0;i<size/2;i++)
+	{
+		__asm("STRH %[_0], [%[dst]]"				
+			:
+			: [dst] "r" (dest16[i]), [_0] "r" (zero));  
 	}
 }

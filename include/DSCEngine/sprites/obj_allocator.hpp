@@ -1,11 +1,12 @@
 #pragma once
 
-#include "DSCEngine/video/allocator.hpp"
 #include "DSCEngine/resources/asset_data.hpp"
 #include "DSCEngine/sprites/obj_frame.hpp"
 #include "DSCEngine/types/hash_map.hpp"
 #include "DSCEngine/types/hash_set.hpp"
 #include "DSCEngine/types/point.hpp"
+#include "DSCEngine/video/allocator.hpp"
+#include "DSCEngine/video/palette_loader.hpp"
 
 namespace DSC
 {
@@ -17,6 +18,7 @@ namespace DSC
 		HashMap<const AssetData*, HashMap<Point<short>, int>> loaded_frames;
 		
 		Allocator& allocator;
+		PaletteLoader& palette_loader;
 		
 		int bytes_per_entry = 1;
 		
@@ -28,7 +30,7 @@ namespace DSC
 			\param allocator VRAM allocator to be used
 			\param bytes_per_entry minimum bytes allocation block count (32, 64, 128, 256)			
 		 */
-		ObjAllocator(Allocator& allocator, int bytes_per_entry = 1);
+		ObjAllocator(Allocator& allocator, PaletteLoader& palette_loader, int bytes_per_entry = 1);
 		
 		/*! \brief allocates new block for the specified frame
 			\param frame object frame data

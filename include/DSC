@@ -10,9 +10,14 @@
 #include "DSCEngine/resources/asset_data.hpp"
 
 #include "DSCEngine/sprites/sprite.hpp"
+#include "DSCEngine/sprites/obj_allocator.hpp"
+#include "DSCEngine/sprites/obj_frame.hpp"
+#include "DSCEngine/sprites/obj_visual.hpp"
 
 #include "DSCEngine/scenes/scene.hpp"
 #include "DSCEngine/scenes/generic_scene_256.hpp"
+
+#include "DSCEngine/system/hardware.hpp"
 
 #include "DSCEngine/types/templates.hpp"
 #include "DSCEngine/types/bits_array.hpp"
@@ -22,4 +27,5 @@
 
 #include "DSCEngine/video/measure.hpp"
 #include "DSCEngine/video/palette_manager.hpp"
+#include "DSCEngine/video/palette_loader.hpp"
 #include "DSCEngine/video/vram_loader.hpp"

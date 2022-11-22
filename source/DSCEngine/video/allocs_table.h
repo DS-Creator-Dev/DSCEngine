@@ -1,8 +1,8 @@
 #pragma once
 
 extern const int allocs_count;
-extern __attribute__((section(".iwram.alloc_buffer"))) int allocs_table_stamps[];
-extern __attribute__((section(".iwram.alloc_buffer"))) unsigned char allocs_table_ids[];
+extern /*__attribute__((section(".iwram.alloc_buffer")))*/ int allocs_table_stamps[];
+extern /*__attribute__((section(".iwram.alloc_buffer")))*/ unsigned char allocs_table_ids[];
 
 extern bool allocs_table_inited;
 
