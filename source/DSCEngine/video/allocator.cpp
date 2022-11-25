@@ -65,14 +65,14 @@ DSC::Allocator::Allocator(int offset, int length)
 {
 	if(!allocs_table_inited)
 	{
-		Debug::log("Initing allocs table");
+		//Debug::log("Initing allocs table");
 		init_allocs_table();
 	}
-	Debug::log("Writing base offset");
+	//Debug::log("Writing base offset");
 	alloc_info::at(base_offset)->write(length, nullptr);
-	Debug::log("Generating id");
+	//Debug::log("Generating id");
 	int gen_id = create_alloc_id();
-	Debug::log("Got id = %i", gen_id);
+	//Debug::log("Got id = %i", gen_id);
 	nds_assert(gen_id!=0, "Allocators limit exceeded");
 	id = gen_id;
 }

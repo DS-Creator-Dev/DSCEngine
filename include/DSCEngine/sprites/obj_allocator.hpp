@@ -20,7 +20,7 @@ namespace DSC
 		Allocator& allocator;
 		PaletteLoader& palette_loader;
 		
-		int bytes_per_entry = 1;
+		int bytes_per_entry = 32;
 		
 		void remove(const AssetData* asset, Point<short> metatile); //!< removes frmae key from the loaded frames		
 		
@@ -30,7 +30,7 @@ namespace DSC
 			\param allocator VRAM allocator to be used
 			\param bytes_per_entry minimum bytes allocation block count (32, 64, 128, 256)			
 		 */
-		ObjAllocator(Allocator& allocator, PaletteLoader& palette_loader, int bytes_per_entry = 1);
+		ObjAllocator(Allocator& allocator, PaletteLoader& palette_loader, int bytes_per_entry = 32);
 		
 		/*! \brief allocates new block for the specified frame
 			\param frame object frame data
@@ -42,6 +42,6 @@ namespace DSC
 		 */
 		void deallocate(ObjFrame* frame);			
 		
-		~ObjAllocator();
+		~ObjAllocator() = default;
 	};
 }

@@ -11,13 +11,13 @@ namespace DSC
 	{
 		friend class ObjAllocator;
 	private:
-		AssetData* asset = nullptr;
+		const AssetData* asset = nullptr;
 		short metatile_row = 0;
 		short metatile_col = 0;
 		void* gfx_ptr = nullptr;
 		Event unload;
 	public:			
-		ObjFrame(AssetData* asset, int metatile_row, int metatile_col);		
+		ObjFrame(const AssetData* asset, int metatile_row, int metatile_col);		
 		
 		~ObjFrame();
 	};

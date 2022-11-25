@@ -28,8 +28,8 @@ bool DSC::ObjAllocator::allocate(ObjFrame* frame)
 {
 	frame->unload.add_event(&ObjAllocator::on_frame_unload, this);
 	
-	AssetData* asset = frame->asset;
-	Point<short> metatile = { x : frame->metatile_row, y : frame->metatile_col};
+	const AssetData* asset = frame->asset;
+	Point<short> metatile = { x : frame->metatile_col, y : frame->metatile_row};
 	
 	loaded_frames[asset][metatile]++;
 	
@@ -37,8 +37,11 @@ bool DSC::ObjAllocator::allocate(ObjFrame* frame)
 	{
 	
 		int meta_size = asset->get_metatile_size();
-		int alloc_size = MeasureValue(meta_size).fit().blocks(bytes_per_entry).value();	
-		void* address = allocator.reserve(alloc_size);		
+		Debug::log("MS = %i",meta_size);
+		int alloc_size = MeasureValue(meta_size).fit().blocks(bytes_per_entry).value() * bytes_per_entry;
+		Debug::log("~ALLOC~ Size = %i",alloc_size);
+		void* address = allocator.reserve(alloc_size);	
+		Debug::log("~ALLOC~ Reserved VRAM : 0x%X", address);
 		
 		if(address == nullptr) // failed
 		{
@@ -72,8 +75,8 @@ bool DSC::ObjAllocator::allocate(ObjFrame* frame)
 
 void DSC::ObjAllocator::deallocate(ObjFrame* frame)
 {
-	AssetData* asset = frame->asset;
-	Point<short> metatile = { x : frame->metatile_row, y : frame->metatile_col};
+	const AssetData* asset = frame->asset;
+	Point<short> metatile = { x : frame->metatile_col, y : frame->metatile_row};
 	
 	if(!loaded_frames.contains_key(asset)) return;
 	if(!loaded_frames[asset].contains_key(metatile)) return;
