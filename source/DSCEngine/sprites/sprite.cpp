@@ -47,6 +47,7 @@ void DSC::Sprite::update_visual()
 
 void DSC::Sprite::update_position()
 {
+	Debug::log("%i %i %i",x(), hitbox.left, anchor.x);
 	_<ObjAttribute>(attr)->set_x((short)(x() - hitbox.left - anchor.x));
 	_<ObjAttribute>(attr)->set_y((short)(y() - hitbox.top  - anchor.y));
 }
@@ -84,4 +85,15 @@ void DSC::Sprite::oam_deploy_main()
 void DSC::Sprite::oam_deploy_sub()
 {	
 	OamPool::sub()->deploy();	
+}
+
+Engine DSC::Sprite::get_engine() const
+{
+	return _<OamPool>(oam_pool) == OamPool::main() ? Engine::Main : Engine::Sub;
+}
+
+void DSC::Sprite::set_position(sf24 x, sf24 y)
+{
+	pos.x = x;
+	pos.y = y;
 }

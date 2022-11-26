@@ -2,6 +2,8 @@
 
 #include "DSCEngine/scenes/scene.hpp"
 #include "DSCEngine/resources/asset_data.hpp"
+#include "DSCEngine/sprites/sprite.hpp"
+
 
 namespace DSC
 {
@@ -53,6 +55,10 @@ namespace DSC
 		void require_bitmap_16bpp(int id, const DSC::AssetData* bitmap);
 		
 				
+		Sprite* create_sprite(Sprite* sprite);
+		
+		void begin_sprites_init();		
+		void end_sprites_init();
 		
 		~GenericScene256();
 		

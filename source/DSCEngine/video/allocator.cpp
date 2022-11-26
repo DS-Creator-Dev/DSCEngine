@@ -75,6 +75,10 @@ DSC::Allocator::Allocator(int offset, int length)
 	//Debug::log("Got id = %i", gen_id);
 	nds_assert(gen_id!=0, "Allocators limit exceeded");
 	id = gen_id;
+	
+	Debug::log("Created allocator id %i", id);
+	Debug::log("    base   = %x", base_offset);
+	Debug::log("    length = %i", base_length);	
 }
 
 int address_stamp(int base, int offset, int length)
@@ -84,8 +88,16 @@ int address_stamp(int base, int offset, int length)
 
 void* DSC::Allocator::reserve(int size, int desired_offset)
 {
-	if(id==0) return nullptr;
-	if(size==0) return nullptr;
+	if(id==0) 
+	{
+		Debug::warn("Allocator id is 0");
+		return nullptr;
+	}
+	if(size==0) 
+	{
+		Debug::warn("Allocated size is 0");
+		return nullptr;
+	}
 	
 	size = ((size+31)/32)*32; // round size to its upper nearest multiple of 32
 	
@@ -97,7 +109,10 @@ void* DSC::Allocator::reserve(int size, int desired_offset)
 			if(del >= 0 && del+size <= alc->length)
 			{
 				if(!add_to_allocs_table(this->id, 0))
+				{
+					Debug::warn("Failed to push to allocs table");
 					return nullptr;				
+				}
 				
 				int free_space_next_backup = (int)alloc_info::at(free_space_head)->next;
 				
@@ -125,10 +140,14 @@ void* DSC::Allocator::reserve(int size, int desired_offset)
 	{
 		for(auto* alc = alloc_info::at(free_space_head); alc; alc = alc->next)
 		{
+			Debug::log("hre %i",alc->length);
 			if(size <= alc->length)
 			{
 				if(!add_to_allocs_table(this->id, 0))
+				{
+					Debug::warn("Failed to push to allocs table");
 					return nullptr;
+				}
 				
 				int free_space_next_backup = (int)alloc_info::at(free_space_head)->next;
 				if(size < alc->length)
@@ -147,6 +166,7 @@ void* DSC::Allocator::reserve(int size, int desired_offset)
 				return result;
 			}
 		}
+		Debug::warn("Not enough space");
 		return nullptr;
 	}		
 }

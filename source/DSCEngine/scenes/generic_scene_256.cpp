@@ -44,13 +44,17 @@ struct DSC::GenericScene256::__privates__
 	Vector<PaletteManager*> ext_palettes[8];
 	PaletteLoader palette_loader[8];
 	
-	PaletteLoader main_obj_palette_loader = PaletteLoader(nullptr, {});
+	PaletteManager* main_obj_ext_palettes[7];
+	PaletteManager* sub_obj_ext_palettes[7];
 	
-	Allocator main_obj_vram_allocator = Allocator((int)Hardware::MainEngine::ObjVram, 64*1024);
-	Allocator sub_obj_vram_allocator = Allocator((int)Hardware::MainEngine::ObjVram, 128*1024);
+	PaletteLoader* main_obj_palette_loader;
+	PaletteLoader* sub_obj_palette_loader;
+		
+	Allocator main_obj_vram_allocator;		
+	Allocator sub_obj_vram_allocator;
 	
-	//ObjAllocator main_obj_allocator = ObjAllocator(main_obj_vram_allocator, palette_loader);
-	//ObjAllocator sub_obj_allocator = ObjAllocator(sub_obj_vram_allocator, palette_loader);
+	ObjAllocator* main_obj_allocator; 
+	ObjAllocator* sub_obj_allocator;
 };
 
 DSC::GenericScene256::GenericScene256()
@@ -62,14 +66,52 @@ DSC::GenericScene256::GenericScene256()
 void DSC::GenericScene256::init()
 {
 	set_banks();
-
-	// main sprite ext pal
-	short* ext_pal_offset = (short*)VramBank('F').lcd_offset();
-	for(int i=0;i<16;i++)
+	
+	privates->main_obj_vram_allocator = Allocator((int)Hardware::MainEngine::ObjVram, 64*1024);		
+	privates->sub_obj_vram_allocator = Allocator((int)Hardware::SubEngine::ObjVram, 128*1024);
+	
+	// init obj palettes (TO DO: extract to separate function)	
+	
+	privates->main_obj_palette_loader = new PaletteLoader(nullptr, {});
+	privates->sub_obj_palette_loader = new PaletteLoader(nullptr, {});
+	
+	for(int i=0;i<7;i++)
 	{
-		privates->main_obj_palette_loader.add_extended_palette_manager(new PaletteManager(ext_pal_offset));
-		ext_pal_offset += 256;
+		privates->main_obj_ext_palettes[i] = new PaletteManager(Hardware::MainEngine::ObjExtendedPalette(i));
+		privates->main_obj_palette_loader->add_extended_palette_manager(privates->main_obj_ext_palettes[i]);
+		
+		privates->sub_obj_ext_palettes[i] = new PaletteManager(Hardware::SubEngine::ObjExtendedPalette(i));
+		privates->sub_obj_palette_loader->add_extended_palette_manager(privates->sub_obj_ext_palettes[i]);
 	}
+	
+	privates->main_obj_palette_loader->set_default_allocation_mode(PaletteLoader::ALLOC_MODE_EXTENDED_PALETTES);
+	privates->sub_obj_palette_loader->set_default_allocation_mode(PaletteLoader::ALLOC_MODE_EXTENDED_PALETTES);
+	
+	privates->main_obj_allocator = new ObjAllocator(&privates->main_obj_vram_allocator, privates->main_obj_palette_loader);
+	privates->sub_obj_allocator = new ObjAllocator(&privates->sub_obj_vram_allocator, privates->sub_obj_palette_loader);
+		
+	
+	Debug::log("GenericScene256 inited");
+}
+
+Sprite* DSC::GenericScene256::create_sprite(Sprite* sprite)
+{
+	sprite->set_default_allocator(sprite->get_engine()==Engine::Main 
+		? privates->main_obj_allocator
+		: privates->sub_obj_allocator);		
+	return sprite;
+}
+
+void DSC::GenericScene256::begin_sprites_init()
+{
+	VramBank('F').lcd()        .config();	
+	VramBank('I').lcd()        .config();
+}
+
+void DSC::GenericScene256::end_sprites_init()
+{
+	VramBank('F').main().sprite()    .ext_palette()        .config();	
+	VramBank('I').sub() .sprite()    .ext_palette()        .config();
 }
 
 __attribute__((noinline))
@@ -77,6 +119,10 @@ void DSC::GenericScene256::run()
 {
 	solve_map_requirements();
 	load_assets();
+	
+	Hardware::MainEngine::objEnable(true);
+	Hardware::SubEngine::objEnable(true);
+	
 	Scene::run();	
 }
 
@@ -570,7 +616,7 @@ int DSC::GenericScene256::validate_bg_size(int w, int h, int color_depth, bool i
 }
 
 void DSC::GenericScene256::set_banks()
-{
+{	
 	VramBank('A').main().background().vram()       .slot(0).config();	
 	VramBank('B').main().background().vram()       .slot(1).config();
 	VramBank('C').sub() .background().vram()               .config();	

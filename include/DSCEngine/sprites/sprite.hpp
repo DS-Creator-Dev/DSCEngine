@@ -17,7 +17,7 @@ namespace DSC
 				
 		// internal layout
 		Hitbox hitbox;
-		Point<char> anchor, theoretical_anchor;
+		Point<char> anchor={0,0}, theoretical_anchor={0,0};
 		
 		Point<sf24> pos;
 		
@@ -35,10 +35,13 @@ namespace DSC
 		void update_visual();
 		void update_position();
 	
+		void set_position(sf24 x, sf24 y);
+	
 		virtual sf24 x() const override;
 		virtual sf24 y() const override;
 		~Sprite();
 		
+		Engine get_engine() const;
 		
 		void set_default_allocator(ObjAllocator* obj_allocator);
 		int add_frame(ObjFrame* frame);
