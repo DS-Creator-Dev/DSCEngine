@@ -39,6 +39,12 @@ namespace
 	{
 		*((volatile unsigned char*)0x04000240+bank_name-'A'+(bank_name>='H')) = 0x80 | value;
 	}
+	
+	char get_bank(char bank_name)
+	{
+		return *((volatile unsigned char*)0x04000240+bank_name-'A'+(bank_name>='H'));
+	}
+	
 }
 
 void DSC::Hardware::VramBank::config()
@@ -120,16 +126,16 @@ void DSC::Hardware::VramBank::config()
 	//BanksReg[bank_name-'A'] = 0x80 | mst | (ofs<<3);
 }
 	
-void DSC::Hardware::VramBank::enable() { BanksReg[bank_name-'A'] |= 0x80; }
+void DSC::Hardware::VramBank::enable() { BanksReg[bank_name-'A'+(bank_name>='H')] |= 0x80; }
 
-void DSC::Hardware::VramBank::disable() { BanksReg[bank_name-'A'] &= 0x7f; }
+void DSC::Hardware::VramBank::disable() { BanksReg[bank_name-'A'+(bank_name>='H')] &= 0x7f; }
 
-bool DSC::Hardware::VramBank::is_enabled() const { return BanksReg[bank_name-'A'] & 0x80; }
+bool DSC::Hardware::VramBank::is_enabled() const { return BanksReg[bank_name-'A'+(bank_name>='H')] & 0x80; }
 
 
 VramBank& DSC::Hardware::VramBank::save_state()
 {
-	backup = 0x80 | BanksReg[bank_name-'A'+bank_name>='H'];
+	backup = get_bank(bank_name);
 	return *this;
 }
 
