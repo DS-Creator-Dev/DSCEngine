@@ -133,6 +133,8 @@ namespace DSC
 		 */
 		bool is_4bit() const;
 		
+		void set_color_depth(int bpp);
+		
 		int get_palette_number() const;
 		
 		void set_palette_number(int slot);

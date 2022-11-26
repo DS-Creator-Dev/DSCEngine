@@ -3,6 +3,7 @@
 #include "DSCEngine/resources/asset_data.hpp"
 #include "DSCEngine/events/event.hpp"
 #include "DSCEngine/sprites/obj_allocator.hpp"
+#include "DSCEngine/sprites/obj_visual.hpp"
 
 
 namespace DSC
@@ -10,6 +11,7 @@ namespace DSC
 	class ObjFrame
 	{
 		friend class ObjAllocator;
+		friend class ObjVisual;
 	private:
 		const AssetData* asset = nullptr;
 		short metatile_row = 0;

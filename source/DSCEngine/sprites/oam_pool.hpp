@@ -11,7 +11,7 @@ namespace DSC
 	* 
 	 */		
 	class OamPool
-	{		
+	{				
 	private:
 		static constexpr unsigned int OBJ_COUNT = 128;
 		static constexpr unsigned int OBJ_BUFFER_SIZE = OBJ_COUNT * sizeof(ObjAttribute);
@@ -21,7 +21,7 @@ namespace DSC
 		short __obj_attr_buffer[OBJ_BUFFER_SIZE / 2];
 		ObjAttribute* obj_attr() const { return (ObjAttribute*)__obj_attr_buffer; }		
 				
-		bool is_main = false;
+		bool _is_main = false;
 		
 		OamPool(bool is_main=true);
 		int id_of(const ObjAttribute* attr) const;
@@ -74,5 +74,7 @@ namespace DSC
 			\return pointer to sub OamPool
 		 */
 		static OamPool* const sub();
+		
+		bool is_main() const;
 	};
 }

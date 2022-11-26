@@ -2,14 +2,17 @@
 
 #include "DSCEngine/types/point.hpp"
 #include "DSCEngine/sprites/hitbox.hpp"
+#include "DSCEngine/sprites/obj_visual.hpp"
 #include "DSCEngine/world/localizable.hpp"
+#include "DSCEngine/system/hardware.hpp"
 
 namespace DSC
-{
+{	
 	class Sprite : public Localizable
 	{
 	private:
-		void* _attr;		
+		void* oam_pool;
+		void* attr;
 				
 		// internal layout
 		Hitbox hitbox;
@@ -17,10 +20,24 @@ namespace DSC
 		
 		Point<sf24> pos;
 		
-	public:		
+		ObjVisual* visual;
+				
+	public:				
+		Sprite(ObjSize size, Engine engine);
+		
+
+		ObjVisual* get_visual() const;
+
+		Size<char> get_size() const;
+	
+		void update_visual();
+		void update_position();
 	
 		virtual sf24 x() const override;
 		virtual sf24 y() const override;
 		~Sprite();
+		
+		static void oam_deploy_main();
+		static void oam_deploy_sub();
 	};
 }

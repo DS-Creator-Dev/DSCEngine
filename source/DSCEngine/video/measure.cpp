@@ -83,3 +83,9 @@ Measure& DSC::Measure::bpp(int _color_depth)
 	this->color_depth = _color_depth;
 	return *this;
 }
+
+int DSC::Measure::tile_id(void* address, void* base) const
+{
+	// some sanity checks should be done here...
+	return ((int)base-(int)address)/tiles(1);
+}

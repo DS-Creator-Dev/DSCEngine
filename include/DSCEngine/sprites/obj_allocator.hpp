@@ -22,7 +22,7 @@ namespace DSC
 		
 		int bytes_per_entry = 32;
 		
-		void remove(const AssetData* asset, Point<short> metatile); //!< removes frmae key from the loaded frames		
+		void remove(const AssetData* asset, Point<short> metatile); //!< removes frame key from the loaded frames		
 		
 		void on_frame_unload(void* sender, void* args); //!< handles automatic frame deallocation
 	public:

@@ -226,3 +226,11 @@ int DSC::ObjAttribute::get_affine_matrix() const
 	nds_assert(is_rotation_scaling(), "Setting affine matrix of non-affine sprite");
 	return (attr1>>9)&31;
 }
+
+void DSC::ObjAttribute::set_color_depth(int bpp)
+{
+	if(bpp==8)
+		attr0 |= (1<<13);
+	else if(bpp==4)
+		attr0 &= ~(1<<13);	
+}

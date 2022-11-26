@@ -123,8 +123,6 @@ void DSC::VramLoader::load(const AssetData* asset, int offset, int size, void* d
 	}	
 }
 
-#include "DSCEngine/debug/assert.hpp"
-
 void DSC::VramLoader::clear(void* dest, int size)
 {
 	Debug::log("Clear vram : 0x%X (%i)", dest, size);

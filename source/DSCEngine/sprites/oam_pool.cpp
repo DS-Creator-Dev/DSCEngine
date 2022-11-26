@@ -47,14 +47,22 @@ void DSC::OamPool::remove_obj(ObjAttribute* attr)
 
 short* DSC::OamPool::oam_offset() const
 {
-	return (short*)(0x07000000 + (is_main ? 0x000 : 0x400));
+	return (short*)(0x07000000 + (is_main() ? 0x000 : 0x400));
 }
 
 #include <nds.h>
+#include "DSCEngine/system/hardware.hpp"
 
 void DSC::OamPool::deploy()
-{	
-	//nds_assert(Video::objIsEnabled(), "Deploying with OAM disabled");	
+{		
+	if(is_main())
+	{
+		nds_assert(Hardware::MainEngine::objIsEnabled(), "Main: Deploying with OAM disabled");	
+	}
+	else
+	{
+		nds_assert(Hardware::SubEngine::objIsEnabled(), "Sub: Deploying with OAM disabled");
+	}		
 	dmaCopy(__obj_attr_buffer, oam_offset(), OBJ_COUNT * 4 * sizeof(u16));
 }
 
@@ -83,7 +91,9 @@ namespace
 	char _oam_sub_slot[sizeof(OamPool)];
 }
 
-DSC::OamPool::OamPool(bool is_main) : is_main(is_main) {}
+DSC::OamPool::OamPool(bool is_main) : _is_main(is_main) {}
+
+bool DSC::OamPool::is_main() const { return _is_main; }
 
 OamPool* const DSC::OamPool::main()
 {
