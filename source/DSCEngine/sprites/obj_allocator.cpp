@@ -62,9 +62,11 @@ bool DSC::ObjAllocator::allocate(ObjFrame* frame)
 		
 		VramLoader::load(frame->asset,  
 			Measure()
+				.bpp(frame->asset->get_color_depth())
 				.metatile(frame->asset->get_metatile_width(), frame->asset->get_metatile_height())
 				.tiles(metatiles_per_row * frame->metatile_row + frame->metatile_col),
 			Measure()
+				.bpp(frame->asset->get_color_depth())
 				.metatile(frame->asset->get_metatile_width(), frame->asset->get_metatile_height())
 				.tiles(1),
 			frame->gfx_ptr, palloc.indices);

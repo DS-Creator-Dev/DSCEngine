@@ -76,7 +76,7 @@ void DSC::VramLoader::load(const AssetData* asset, int offset, int size, void* d
 			asset->extract(dest, offset, size);
 			return;
 		}				
-		nds_assert(offset+size<asset->get_gfx_length());
+		nds_assert(offset+size<=asset->get_gfx_length());
 		unsigned char* buffer = new unsigned char[size];
 		
 		asset->extract(buffer, offset, size);
