@@ -23,6 +23,10 @@ namespace DSC
 		SIZE_32x64 = 11  //!< Sprite size 32x64 
 	};	
 	
+	/*! \brief Converts ObjSize enum item to actual Size object
+		\param objsize size flag, as used by hardware
+		\return Size object telling the width and the height mapped to the ObjSize item  
+	 */
 	inline static Size<int> obj_get_size(ObjSize objsize)
 	{
 		int val = (int)objsize;
