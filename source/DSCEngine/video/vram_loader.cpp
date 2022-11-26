@@ -123,15 +123,19 @@ void DSC::VramLoader::load(const AssetData* asset, int offset, int size, void* d
 	}	
 }
 
+#include "DSCEngine/debug/assert.hpp"
+
 void DSC::VramLoader::clear(void* dest, int size)
 {
+	Debug::log("Clear vram : 0x%X (%i)", dest, size);
 	nds_assert(size%2 == 0);
 	short* dest16 = (short*) dest;
 	const int zero = 0;
 	for(int i=0;i<size/2;i++)
-	{
+	{		
+		
 		__asm("STRH %[_0], [%[dst]]"				
 			:
-			: [dst] "r" (dest16[i]), [_0] "r" (zero));  
+			: [dst] "r" (&dest16[i]), [_0] "r" (zero));				
 	}
 }

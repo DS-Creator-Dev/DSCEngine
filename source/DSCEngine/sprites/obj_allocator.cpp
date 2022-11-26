@@ -62,12 +62,12 @@ bool DSC::ObjAllocator::allocate(ObjFrame* frame)
 		
 		VramLoader::load(frame->asset,  
 			Measure()
-				.bpp(frame->asset->get_color_depth())
-				.metatile(frame->asset->get_metatile_width(), frame->asset->get_metatile_height())
+				.bpp(asset->get_color_depth())
+				.metatile(asset->get_metatile_width(), asset->get_metatile_height())
 				.tiles(metatiles_per_row * frame->metatile_row + frame->metatile_col),
 			Measure()
 				.bpp(frame->asset->get_color_depth())
-				.metatile(frame->asset->get_metatile_width(), frame->asset->get_metatile_height())
+				.metatile(asset->get_metatile_width(), asset->get_metatile_height())
 				.tiles(1),
 			frame->gfx_ptr, palloc.indices);
 	}
@@ -77,6 +77,7 @@ bool DSC::ObjAllocator::allocate(ObjFrame* frame)
 
 void DSC::ObjAllocator::deallocate(ObjFrame* frame)
 {
+	Debug::log("Deallocating frame");
 	const AssetData* asset = frame->asset;
 	Point<short> metatile = { x : frame->metatile_col, y : frame->metatile_row};
 	
@@ -87,12 +88,21 @@ void DSC::ObjAllocator::deallocate(ObjFrame* frame)
 	
 	if(loaded_frames[asset][metatile] == 0)
 	{
+		Debug::log("Clear %X : %i",frame->gfx_ptr, Measure()
+			.bpp(asset->get_color_depth())
+			.metatile(asset->get_metatile_width(), asset->get_metatile_height())
+			.tiles(1).value());
 		VramLoader::clear(frame->gfx_ptr, Measure()
-			.metatile(frame->asset->get_metatile_width(), frame->asset->get_metatile_height())
+			.bpp(asset->get_color_depth())
+			.metatile(asset->get_metatile_width(), asset->get_metatile_height())
 			.tiles(1));
 		allocator.release(frame->gfx_ptr);		
 		frame->gfx_ptr = nullptr;
+		
+		loaded_frames[asset].remove_key(metatile);
 	}	
+	if(loaded_frames[asset].size()==0)
+		loaded_frames.remove_key(asset);
 }
 
 void DSC::ObjAllocator::on_frame_unload(void* sender, void* args)
