@@ -51,6 +51,28 @@ void DSC::Sprite::update_position()
 	_<ObjAttribute>(attr)->set_y((short)(y() - hitbox.top  - anchor.y));
 }
 
+void Sprite::set_default_allocator(ObjAllocator* obj_allocator)
+{
+	this->obj_allocator = obj_allocator;
+}
+
+int Sprite::add_frame(ObjFrame* frame)
+{
+	if(obj_allocator)
+	{
+		if(!obj_allocator->allocate(frame))
+		{
+			Debug::error("Failed allocation");
+			return -1;			
+		}
+	}
+	if(frame->gfx_ptr==nullptr)
+	{
+		Debug::warn("Frame not allocated!");
+	}
+	return visual->add_frame(frame);
+}
+
 sf24 DSC::Sprite::x() const { return pos.x; }
 sf24 DSC::Sprite::y() const { return pos.y; }
 

@@ -27,6 +27,8 @@ namespace DSC
 		PaletteLoader(PaletteManager* standard_pal_mng);
 		PaletteLoader(PaletteManager* standard_pal_mng, const Vector<PaletteManager*>& extended_pal_mng);
 		
+		void add_extended_palette_manager(PaletteManager* pal_mng);
+		
 		void set_default_allocation_mode(int allocation_mode);
 		PaletteAllocationResult try_load(const AssetData* asset, int allocation_mode = 0);
 		void unload(const AssetData* asset);
@@ -39,6 +41,6 @@ namespace DSC
 		static constexpr int STANDARD_PALETTE = -1;
 		static constexpr int EXTENDED_PALETTE(int p) { return p; }
 		
-		~PaletteLoader();
+		~PaletteLoader();		
 	};
 }

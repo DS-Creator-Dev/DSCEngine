@@ -4,6 +4,7 @@
 #include "DSCEngine/video/palette_manager.hpp"
 #include "DSCEngine/video/palette_loader.hpp"
 #include "DSCEngine/video/vram_loader.hpp"
+#include "DSCEngine/video/allocator.hpp"
 
 #include "DSCEngine/debug/assert.hpp"
 #include "DSCEngine/debug/error.hpp"
@@ -11,6 +12,8 @@
 #include "DSCEngine/system/hardware.hpp"
 
 #include "DSCEngine/utils/math.hpp"
+
+#include "DSCEngine/sprites/obj_allocator.hpp"
 
 #include <nds.h>
 
@@ -39,7 +42,15 @@ struct DSC::GenericScene256::__privates__
 	PaletteManager sub_palette = PaletteManager(Hardware::SubEngine::BgPalette);
 	
 	Vector<PaletteManager*> ext_palettes[8];
-	PaletteLoader palette_loader[8];			
+	PaletteLoader palette_loader[8];
+	
+	PaletteLoader main_obj_palette_loader = PaletteLoader(nullptr, {});
+	
+	Allocator main_obj_vram_allocator = Allocator((int)Hardware::MainEngine::ObjVram, 64*1024);
+	Allocator sub_obj_vram_allocator = Allocator((int)Hardware::MainEngine::ObjVram, 128*1024);
+	
+	//ObjAllocator main_obj_allocator = ObjAllocator(main_obj_vram_allocator, palette_loader);
+	//ObjAllocator sub_obj_allocator = ObjAllocator(sub_obj_vram_allocator, palette_loader);
 };
 
 DSC::GenericScene256::GenericScene256()
@@ -51,6 +62,14 @@ DSC::GenericScene256::GenericScene256()
 void DSC::GenericScene256::init()
 {
 	set_banks();
+
+	// main sprite ext pal
+	short* ext_pal_offset = (short*)VramBank('F').lcd_offset();
+	for(int i=0;i<16;i++)
+	{
+		privates->main_obj_palette_loader.add_extended_palette_manager(new PaletteManager(ext_pal_offset));
+		ext_pal_offset += 256;
+	}
 }
 
 __attribute__((noinline))

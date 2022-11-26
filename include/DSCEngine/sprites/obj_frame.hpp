@@ -12,6 +12,7 @@ namespace DSC
 	{
 		friend class ObjAllocator;
 		friend class ObjVisual;
+		friend class Sprite;
 	private:
 		const AssetData* asset = nullptr;
 		short metatile_row = 0;

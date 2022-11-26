@@ -143,3 +143,8 @@ DSC::PaletteLoader::~PaletteLoader()
 {
 	Debug::log("Destroyed PaletteLoader %X (%i)", this, sizeof(PaletteLoader));
 }
+
+void DSC::PaletteLoader::add_extended_palette_manager(PaletteManager* pal_mng)
+{
+	extended_pal_mng.push_back(pal_mng);
+}

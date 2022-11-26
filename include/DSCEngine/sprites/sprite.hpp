@@ -2,6 +2,7 @@
 
 #include "DSCEngine/types/point.hpp"
 #include "DSCEngine/sprites/hitbox.hpp"
+#include "DSCEngine/sprites/obj_allocator.hpp"
 #include "DSCEngine/sprites/obj_visual.hpp"
 #include "DSCEngine/world/localizable.hpp"
 #include "DSCEngine/system/hardware.hpp"
@@ -22,6 +23,7 @@ namespace DSC
 		
 		ObjVisual* visual;
 				
+		ObjAllocator* obj_allocator = nullptr;
 	public:				
 		Sprite(ObjSize size, Engine engine);
 		
@@ -37,7 +39,11 @@ namespace DSC
 		virtual sf24 y() const override;
 		~Sprite();
 		
+		
+		void set_default_allocator(ObjAllocator* obj_allocator);
+		int add_frame(ObjFrame* frame);
+		
 		static void oam_deploy_main();
-		static void oam_deploy_sub();
+		static void oam_deploy_sub();		
 	};
 }

@@ -363,7 +363,6 @@ int DSC::PaletteManager::hashColor(const short& color)
 	return (r+g+b)&127;
 }
 
-
 DSC::PaletteAllocationResult::~PaletteAllocationResult()
 {
 	Debug::log("~PaletteAllocationResult indices = %X", indices);
