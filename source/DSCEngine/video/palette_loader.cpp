@@ -41,9 +41,12 @@ PaletteAllocationResult DSC::PaletteLoader::try_load(const AssetData* asset, int
 		Debug::log("Alloc extended palette");
 		for(int i=0;i<extended_pal_mng.size();i++)
 		{
-			PaletteAllocationResult palloc = try_alloc_extended(asset,i);
+			PaletteAllocationResult palloc = try_alloc_extended(asset,i);			
 			if(palloc.succeeded)									
+			{
+				Debug::log("Succeeded palette %i", i);
 				return palloc;			
+			}
 		}
 	}
 	return {nullptr, 0, 0, false};	

@@ -5,7 +5,7 @@
 
 using namespace DSC::Hardware;
 
-char* const DSC::Hardware::BanksReg = (char* const)0x04000240;
+volatile char* const DSC::Hardware::BanksReg = (volatile char* const)0x04000240;
 
 DSC::Hardware::VramBank::VramBank(char bank_name) : bank_name(bank_name)
 {
@@ -33,11 +33,21 @@ VramBank& DSC::Hardware::VramBank::slot(int slot_number)
 	return *this; 
 }
 
+namespace
+{
+	void set_bank(char bank_name, char value)
+	{
+		*((volatile unsigned char*)0x04000240+bank_name-'A'+(bank_name>='H')) = 0x80 | value;
+	}
+}
+
 void DSC::Hardware::VramBank::config()
 {
 	if(is_lcd) 
 	{
-		BanksReg[bank_name-'A'] = 0; return;
+		set_bank(bank_name, 0);
+		//BanksReg[bank_name-'A'] = 0x80 | 0; 
+		return;
 	}
 	
 	int mst=0;	
@@ -106,7 +116,8 @@ void DSC::Hardware::VramBank::config()
 		}
 	}	
 	
-	BanksReg[bank_name-'A'] = 0x80 | mst | (ofs<<3);
+	set_bank(bank_name, mst | (ofs<<3));
+	//BanksReg[bank_name-'A'] = 0x80 | mst | (ofs<<3);
 }
 	
 void DSC::Hardware::VramBank::enable() { BanksReg[bank_name-'A'] |= 0x80; }
@@ -118,13 +129,14 @@ bool DSC::Hardware::VramBank::is_enabled() const { return BanksReg[bank_name-'A'
 
 VramBank& DSC::Hardware::VramBank::save_state()
 {
-	backup = BanksReg[bank_name-'A'];
+	backup = 0x80 | BanksReg[bank_name-'A'+bank_name>='H'];
 	return *this;
 }
 
 void DSC::Hardware::VramBank::restore()
 {	
-	BanksReg[bank_name-'A'] = backup;
+	set_bank(bank_name, backup);
+	//BanksReg[bank_name-'A'] = backup;
 }
 	
 void*  DSC::Hardware::VramBank::lcd_offset() const

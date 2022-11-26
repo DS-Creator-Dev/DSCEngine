@@ -17,8 +17,8 @@ namespace DSC
 	private:
 		HashMap<const AssetData*, HashMap<Point<short>, int>> loaded_frames;
 		
-		Allocator& allocator;
-		PaletteLoader& palette_loader;
+		Allocator* allocator;
+		PaletteLoader* palette_loader;
 		
 		int bytes_per_entry = 32;
 		
@@ -30,7 +30,7 @@ namespace DSC
 			\param allocator VRAM allocator to be used
 			\param bytes_per_entry minimum bytes allocation block count (32, 64, 128, 256)			
 		 */
-		ObjAllocator(Allocator& allocator, PaletteLoader& palette_loader, int bytes_per_entry = 32);
+		ObjAllocator(Allocator* allocator, PaletteLoader* palette_loader, int bytes_per_entry = 32);
 		
 		/*! \brief allocates new block for the specified frame
 			\param frame object frame data

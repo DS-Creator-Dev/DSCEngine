@@ -7,7 +7,7 @@
 
 using namespace DSC;
 
-DSC::ObjAllocator::ObjAllocator(Allocator& allocator, PaletteLoader& palette_loader, int bytes_per_entry) 
+DSC::ObjAllocator::ObjAllocator(Allocator* allocator, PaletteLoader* palette_loader, int bytes_per_entry) 
 	: allocator(allocator), palette_loader(palette_loader), bytes_per_entry(bytes_per_entry)
 {
 	nds_assert((bytes_per_entry & (bytes_per_entry - 1)) == 0 // bytes_per_entry is a power of 2
@@ -40,7 +40,7 @@ bool DSC::ObjAllocator::allocate(ObjFrame* frame)
 		Debug::log("MS = %i",meta_size);
 		int alloc_size = MeasureValue(meta_size).fit().blocks(bytes_per_entry).value() * bytes_per_entry;
 		Debug::log("~ALLOC~ Size = %i",alloc_size);
-		void* address = allocator.reserve(alloc_size);	
+		void* address = allocator->reserve(alloc_size);	
 		Debug::log("~ALLOC~ Reserved VRAM : 0x%X", address);
 		
 		if(address == nullptr) // failed
@@ -53,7 +53,7 @@ bool DSC::ObjAllocator::allocate(ObjFrame* frame)
 		
 		// load frame graphics
 		
-		PaletteAllocationResult palloc = palette_loader.try_load(frame->asset, PaletteLoader::ALLOC_MODE_DEFAULT);
+		PaletteAllocationResult palloc = palette_loader->try_load(frame->asset, PaletteLoader::ALLOC_MODE_DEFAULT);		
 		
 		nds_assert(palloc.succeeded, "Palette allocation failed");
 		
@@ -86,6 +86,7 @@ void DSC::ObjAllocator::deallocate(ObjFrame* frame)
 	
 	loaded_frames[asset][metatile]--;
 	
+	// forgot palette unload here...
 	if(loaded_frames[asset][metatile] == 0)
 	{
 		Debug::log("Clear %X : %i",frame->gfx_ptr, Measure()
@@ -96,7 +97,7 @@ void DSC::ObjAllocator::deallocate(ObjFrame* frame)
 			.bpp(asset->get_color_depth())
 			.metatile(asset->get_metatile_width(), asset->get_metatile_height())
 			.tiles(1));
-		allocator.release(frame->gfx_ptr);		
+		allocator->release(frame->gfx_ptr);		
 		frame->gfx_ptr = nullptr;
 		
 		loaded_frames[asset].remove_key(metatile);

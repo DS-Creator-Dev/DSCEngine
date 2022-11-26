@@ -1,6 +1,7 @@
 #include "DSCEngine/system/hardware.hpp"
 
 #include <nds.h>
+#include "DSCEngine/debug/log.hpp"
 
 void DSC::Hardware::MainEngine::objEnable(bool use_ext_palette)
 {
@@ -27,8 +28,10 @@ bool DSC::Hardware::MainEngine::objIsExtPaletteEnabled()
 void DSC::Hardware::SubEngine::objEnable(bool use_ext_palette)
 {
 	int ext_palette_flag = use_ext_palette ? DISPLAY_SPR_EXT_PALETTE : 0;
+	Debug::log("EXTPALFLAG = %x", ext_palette_flag);
 	*SubEngine::DISPCNT &= ~DISPLAY_SPRITE_ATTR_MASK;
 	*SubEngine::DISPCNT |=  DISPLAY_SPR_ACTIVE | SpriteMapping_1D_32 | ext_palette_flag;
+	Debug::log("DISPCNT = %x", *SubEngine::DISPCNT);
 }
 
 void DSC::Hardware::SubEngine::objDisable()

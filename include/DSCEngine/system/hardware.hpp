@@ -12,10 +12,13 @@ namespace DSC
 namespace DSC::Hardware
 {		
 	typedef short ExtendedPalette[256];
+	
+	int tellExtendedPaletteIndex(void* pal_offset);
+	ExtendedPalette* tellExtendedPaletteBase(void* pal_offset);
 
 	namespace MainEngine
 	{
-		inline static volatile short* const DISPCNT  = (volatile short* const)0x04000000;
+		inline static volatile unsigned int* const DISPCNT  = (volatile unsigned int* const)0x04000000;
 		
 		inline static short* const BgPalette  = (short* const)0x05000000;
 		inline static short* const ObjPalette = (short* const)0x05000200;
@@ -29,7 +32,7 @@ namespace DSC::Hardware
 		ExtendedPalette* ObjExtendedPalette();		
 		
 		ExtendedPalette* BgExtendedPalette(int index);
-		ExtendedPalette* ObjExtendedPalette(int index);		
+		ExtendedPalette* ObjExtendedPalette(int index);				
 		
 		void objEnable(bool use_ext_palette=false);
 		void objDisable();
@@ -39,7 +42,7 @@ namespace DSC::Hardware
 	
 	namespace SubEngine
 	{
-		inline static volatile short* const DISPCNT  = (volatile short* const)0x04001000;
+		inline static volatile unsigned int* const DISPCNT  = (volatile unsigned int* const)0x04001000;
 		
 		inline static short* const BgPalette  = (short* const)0x05000400;
 		inline static short* const ObjPalette = (short* const)0x05000600;
@@ -61,7 +64,7 @@ namespace DSC::Hardware
 		bool objIsExtPaletteEnabled();
 	}	
 	
-	extern char* const BanksReg;
+	extern volatile char* const BanksReg;
 		
 	class VramBank
 	{

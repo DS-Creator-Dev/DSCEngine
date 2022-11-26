@@ -67,7 +67,7 @@ namespace
 }
 
 int DSC::PaletteManager::reserve1(int color)
-{
+{	
 	// if color already exists, increase the color count
 	if(colors_map.contains_key(color))
 	{
@@ -93,8 +93,12 @@ int DSC::PaletteManager::reserve1(int color)
 	free_space[p/32] |= 1<<(p&31);
 	
 	// write color to position
+	Debug::log("Inserting color %x at %x",color, &((short*)pal_offset)[p]);
+			
 	((short*)pal_offset)[p] = color;
-	
+	Debug::log("%x",((short*)pal_offset)[p]);
+	Debug::log("%x",((short*)pal_offset)[p]);
+	nds_assert(((short*)pal_offset)[p] == color);	
 	
 	return p;
 }
