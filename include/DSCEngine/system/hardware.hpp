@@ -33,11 +33,13 @@ namespace DSC::Hardware
 		
 		ExtendedPalette* BgExtendedPalette(int index);
 		ExtendedPalette* ObjExtendedPalette(int index);				
+				
 		
-		void objEnable(bool use_ext_palette=false);
+		void objEnable(int mapping_size, bool use_ext_palette=false);
 		void objDisable();
 		bool objIsEnabled();
 		bool objIsExtPaletteEnabled();
+		int objGetMappingSize();
 	}
 	
 	namespace SubEngine
@@ -58,10 +60,11 @@ namespace DSC::Hardware
 		ExtendedPalette* BgExtendedPalette(int index);
 		ExtendedPalette* ObjExtendedPalette(int index);
 		
-		void objEnable(bool use_ext_palette=false);
+		void objEnable(int mapping_size, bool use_ext_palette=false);
 		void objDisable();
 		bool objIsEnabled();
 		bool objIsExtPaletteEnabled();
+		int objGetMappingSize();
 	}	
 	
 	extern volatile char* const BanksReg;

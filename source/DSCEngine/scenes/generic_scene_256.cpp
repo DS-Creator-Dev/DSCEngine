@@ -55,6 +55,8 @@ struct DSC::GenericScene256::__privates__
 	
 	ObjAllocator* main_obj_allocator; 
 	ObjAllocator* sub_obj_allocator;
+	
+	Vector<Sprite*> sprites;
 };
 
 DSC::GenericScene256::GenericScene256()
@@ -98,8 +100,9 @@ Sprite* DSC::GenericScene256::create_sprite(Sprite* sprite)
 {
 	sprite->set_default_allocator(sprite->get_engine()==Engine::Main 
 		? privates->main_obj_allocator
-		: privates->sub_obj_allocator);		
-	return sprite;
+		: privates->sub_obj_allocator);			
+	privates->sprites.push_back(sprite);
+	return sprite;	
 }
 
 void DSC::GenericScene256::begin_sprites_init()
@@ -120,11 +123,23 @@ void DSC::GenericScene256::run()
 	solve_map_requirements();
 	load_assets();
 	
-	Hardware::MainEngine::objEnable(true);
-	Hardware::SubEngine::objEnable(true);
+	Hardware::MainEngine::objEnable(32, true); // set to 64
+	Hardware::SubEngine::objEnable(32, true); // set to 128
 	
 	Scene::run();	
 }
+
+void DSC::GenericScene256::frame()
+{
+	for(int i=0;i<privates->sprites.size();i++)
+	{
+		privates->sprites[i]->update_visual();
+		privates->sprites[i]->update_position();
+	}
+	Sprite::oam_deploy_main();		
+	Sprite::oam_deploy_sub();		
+}
+
 
 void DSC::GenericScene256::solve_map_requirements_main()
 {

@@ -36,18 +36,26 @@ void DSC::Sprite::update_visual()
 	
 	_<ObjAttribute>(attr)->set_color_depth(visual->get_crt_color_depth());
 	
-	Debug::log("Sprite address = %x", visual->get_crt_gfx());
-	
-	_<ObjAttribute>(attr)->set_tile_index(Measure()
+	Debug::log("Sprite address = %x", visual->get_crt_gfx());	
+			
+	int tile_id = Measure()
 		.bpp(visual->get_crt_color_depth())
-		.tile_id(visual->get_crt_gfx(), _<OamPool>(oam_pool)->is_main() 
-			? Hardware::MainEngine::ObjVram
-			: Hardware::SubEngine::ObjVram));
+		.tile_id(visual->get_crt_gfx(), 
+			_<OamPool>(oam_pool)->is_main() 
+				? Hardware::MainEngine::ObjVram
+				: Hardware::SubEngine::ObjVram,
+			_<OamPool>(oam_pool)->is_main() 
+				? Hardware::MainEngine::objGetMappingSize()
+				: Hardware::SubEngine::objGetMappingSize());
+			
+	Debug::log("Tile = %i", tile_id);
+	
+	_<ObjAttribute>(attr)->set_tile_index(tile_id);
 }
 
 void DSC::Sprite::update_position()
 {
-	Debug::log("%i %i %i",x(), hitbox.left, anchor.x);
+	//Debug::log("%i %i %i",x(), hitbox.left, anchor.x);
 	_<ObjAttribute>(attr)->set_x((short)(x() - hitbox.left - anchor.x));
 	_<ObjAttribute>(attr)->set_y((short)(y() - hitbox.top  - anchor.y));
 }

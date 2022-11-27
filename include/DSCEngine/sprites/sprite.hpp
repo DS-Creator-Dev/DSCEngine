@@ -47,6 +47,6 @@ namespace DSC
 		int add_frame(ObjFrame* frame);
 		
 		static void oam_deploy_main();
-		static void oam_deploy_sub();		
+		static void oam_deploy_sub();				
 	};
 }

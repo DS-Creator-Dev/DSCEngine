@@ -42,6 +42,8 @@ namespace DSC
 		__attribute__((noinline))
 		virtual void run() override;
 		
+		virtual void frame() override;
+		
 		
 		void require_tiledmap_4bpp(int id, int px_width, int px_height, int number_of_tiles);
 		void require_tiledmap_8bpp(int id, int px_width, int px_height, int number_of_tiles);

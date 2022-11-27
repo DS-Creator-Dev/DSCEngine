@@ -131,7 +131,7 @@ namespace DSC
 		
 		int bytes_per_map_entry() const;
 		
-		int tile_id(void* address, void* base) const;
+		int tile_id(void* address, void* base, int mapping_step) const;
 		
 		
 		

@@ -29,15 +29,13 @@ namespace DSC
 			
 			int visual_stat = 0;
 			
-			/*// bit  0    : enabled [0..1]
-			// bit  1    : loop    [0..1]
-			char anim_flags = 0;
-						
-			char frameset_id = 0;
-			char frame_id = 0; // inside frameset			
+			bool anim_enabled = false;
+			int anim_frameset = 0;
+			int anim_crt_frame = 0;
 			
-			char anim_ticks = 0;
-			char crt_ticks = 0;	*/
+			int anim_ticks = 1;
+			int crt_anim_ticks = 0;
+			
 		public:
 			ObjVisual(DSC::ObjSize obj_size);
 			
@@ -63,5 +61,13 @@ namespace DSC
 			int get_crt_color_depth() const;
 			
 			void update();
+						
+			int add_frameset(int frame_id, ...);
+			
+			void set_animation(int frameset_id, bool reset_current_frame = false);
+			
+			void set_animation_ticks(int ticks);
+			
+			inline static constexpr int FRAMESET_END = -1;
 	};	
 }
