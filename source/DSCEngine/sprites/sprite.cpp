@@ -105,3 +105,9 @@ void DSC::Sprite::set_position(sf24 x, sf24 y)
 	pos.x = x;
 	pos.y = y;
 }
+
+void DSC::Sprite::move(sf24 x, sf24 y)
+{
+	pos.x += x;
+	pos.y += y;
+}

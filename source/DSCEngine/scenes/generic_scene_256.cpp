@@ -89,8 +89,8 @@ void DSC::GenericScene256::init()
 	privates->main_obj_palette_loader->set_default_allocation_mode(PaletteLoader::ALLOC_MODE_EXTENDED_PALETTES);
 	privates->sub_obj_palette_loader->set_default_allocation_mode(PaletteLoader::ALLOC_MODE_EXTENDED_PALETTES);
 	
-	privates->main_obj_allocator = new ObjAllocator(&privates->main_obj_vram_allocator, privates->main_obj_palette_loader);
-	privates->sub_obj_allocator = new ObjAllocator(&privates->sub_obj_vram_allocator, privates->sub_obj_palette_loader);
+	privates->main_obj_allocator = new ObjAllocator(&privates->main_obj_vram_allocator, privates->main_obj_palette_loader, 64);
+	privates->sub_obj_allocator = new ObjAllocator(&privates->sub_obj_vram_allocator, privates->sub_obj_palette_loader, 128);
 		
 	
 	Debug::log("GenericScene256 inited");
@@ -123,8 +123,8 @@ void DSC::GenericScene256::run()
 	solve_map_requirements();
 	load_assets();
 	
-	Hardware::MainEngine::objEnable(32, true); // set to 64
-	Hardware::SubEngine::objEnable(32, true); // set to 128
+	Hardware::MainEngine::objEnable(64, true); // set to 64
+	Hardware::SubEngine::objEnable(128, true); // set to 128
 	
 	Scene::run();	
 }

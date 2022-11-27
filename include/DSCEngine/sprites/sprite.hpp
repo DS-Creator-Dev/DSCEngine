@@ -36,6 +36,8 @@ namespace DSC
 		void update_position();
 	
 		void set_position(sf24 x, sf24 y);
+		
+		void move(sf24 x, sf24 y);
 	
 		virtual sf24 x() const override;
 		virtual sf24 y() const override;
