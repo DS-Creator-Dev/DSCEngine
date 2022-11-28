@@ -21,6 +21,7 @@ DSC::Sprite::Sprite(ObjSize size, Engine engine)
 	_<ObjAttribute>(attr)->set_priority(0);
 	
 	visual = new ObjVisual(size);	
+	hitbox = Hitbox(0,0,get_size().width, get_size().height);
 }
 
 Size<char> DSC::Sprite::get_size() const
@@ -115,4 +116,64 @@ void DSC::Sprite::move(sf24 x, sf24 y)
 DSC::Sprite::~Sprite()
 {
 	delete visual;
+}
+
+void DSC::Sprite::flip_horizontal()
+{
+	_<ObjAttribute>(attr)->flip_h();
+}
+
+void DSC::Sprite::flip_vertical()
+{
+	_<ObjAttribute>(attr)->flip_v();
+}
+
+void DSC::Sprite::set_flip_horizontal(bool is_flipped)
+{
+	_<ObjAttribute>(attr)->set_flip_h(is_flipped);
+}
+	
+void DSC::Sprite::set_flip_vertical(bool is_flipped)
+{
+	_<ObjAttribute>(attr)->set_flip_v(is_flipped);
+}
+
+bool DSC::Sprite::is_flipped_horizontal() const
+{
+	return _<ObjAttribute>(attr)->get_flip_h();
+}
+
+bool DSC::Sprite::is_flipped_vertical() const
+{
+	return _<ObjAttribute>(attr)->get_flip_v();
+}
+	
+
+void DSC::Sprite::set_priority(int priority)
+{
+	_<ObjAttribute>(attr)->set_priority(priority);
+}
+
+void DSC::Sprite::show()
+{
+	_<ObjAttribute>(attr)->show();
+}
+
+void DSC::Sprite::hide()
+{
+	_<ObjAttribute>(attr)->hide();
+}
+
+bool DSC::Sprite::is_hidden() const
+{
+	return _<ObjAttribute>(attr)->is_hidden();
+}
+
+void DSC::Sprite::set_anchor(int anchor_x, int anchor_y)
+{
+	theoretical_anchor.x = anchor_x;
+	theoretical_anchor.y = anchor_y;
+
+	anchor.x = hitbox.width * theoretical_anchor.x / 255;
+	anchor.y = hitbox.height * theoretical_anchor.y / 255;		
 }
