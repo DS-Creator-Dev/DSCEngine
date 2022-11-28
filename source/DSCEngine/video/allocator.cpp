@@ -248,6 +248,7 @@ DSC::Allocator::~Allocator()
 {
 	if(id==0) return;
 	remove_allocs_by_id(id);
+	release_alloc_id(id);
 }
 
 

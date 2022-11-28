@@ -18,7 +18,7 @@ DSC::Sprite::Sprite(ObjSize size, Engine engine)
 	oam_pool = (engine == Engine::Main) ? OamPool::main() : OamPool::sub();
 
 	attr = _<OamPool>(oam_pool)->add_obj(ObjAttribute::create16(size)); // bpp will be changed anyway when loading the graphics
-	_<ObjAttribute>(attr)->set_priority(1);
+	_<ObjAttribute>(attr)->set_priority(0);
 	
 	visual = new ObjVisual(size);	
 }

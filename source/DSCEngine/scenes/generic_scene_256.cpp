@@ -212,16 +212,28 @@ void DSC::GenericScene256::solve_map_requirements_main()
 	
 	if(bmp_cnt==2)
 	{
-		videoSetMode(MODE_5_2D);
+		// manually set video mode without touching anything else in the register
+		REG_DISPCNT &= ~0x10007;
+		REG_DISPCNT |= MODE_5_2D;		
 	}
 	else if(bmp_cnt==1)
 	{
 		if(privates->bg_requirements[2].is_bitmap)
-			videoSetMode(MODE_5_2D);
+		{
+			REG_DISPCNT &= ~0x10007;
+			REG_DISPCNT |= MODE_5_2D;		
+		}
 		else
-			videoSetMode(MODE_3_2D);
+		{
+			REG_DISPCNT &= ~0x10007;
+			REG_DISPCNT |= MODE_3_2D;		
+		}
 	}	
-	else videoSetMode(MODE_0_2D);
+	else 
+	{
+		REG_DISPCNT &= ~0x10007;
+		REG_DISPCNT |= MODE_3_2D;		
+	}
 	
 	
 	Vector<int> bg_use_ext;
@@ -336,16 +348,27 @@ void DSC::GenericScene256::solve_map_requirements_sub()
 	Debug::log("Sub?");
 	if(bmp_cnt==2)
 	{
-		videoSetModeSub(MODE_5_2D);
+		REG_DISPCNT_SUB &= ~0x10007;
+		REG_DISPCNT_SUB |= MODE_5_2D;
 	}
 	else if(bmp_cnt==1)
 	{
 		if(privates->bg_requirements[4+2].is_bitmap)
-			videoSetModeSub(MODE_5_2D);
+		{
+			REG_DISPCNT_SUB &= ~0x10007;
+			REG_DISPCNT_SUB |= MODE_5_2D;
+		}
 		else
-			videoSetModeSub(MODE_3_2D);
-	}	
-	else videoSetModeSub(MODE_0_2D);
+		{
+			REG_DISPCNT_SUB &= ~0x10007;
+			REG_DISPCNT_SUB |= MODE_3_2D;
+		}
+	}		
+	else
+	{
+		REG_DISPCNT_SUB &= ~0x10007;
+		REG_DISPCNT_SUB |= MODE_0_2D;
+	}
 	
 	
 	Vector<int> bg_use_ext;
@@ -568,8 +591,27 @@ void DSC::GenericScene256::require_bitmap_16bpp(int id, const AssetData* bitmap)
 }
 
 DSC::GenericScene256::~GenericScene256()
-{
+{		
+	delete privates->main_obj_palette_loader;
+	delete privates->sub_obj_palette_loader;
+	
+	for(int i=0;i<7;i++)
+	{
+		delete privates->main_obj_ext_palettes[i];				
+		delete privates->sub_obj_ext_palettes[i];		
+	}	
+	
+	delete privates->main_obj_allocator;
+	delete privates->sub_obj_allocator;
+	
+	for(int i=0;i<8;i++)
+		for(int j=0;j<privates->ext_palettes[i].size();j++)
+		{
+			delete privates->ext_palettes[i][j];
+		}
+	
 	delete privates;
+	
 }
 
 #include <nds.h>
