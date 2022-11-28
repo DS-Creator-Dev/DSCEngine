@@ -40,8 +40,7 @@ namespace DSC
 		void move(sf24 x, sf24 y);
 	
 		virtual sf24 x() const override;
-		virtual sf24 y() const override;
-		~Sprite();
+		virtual sf24 y() const override;		
 		
 		Engine get_engine() const;
 		
@@ -49,6 +48,8 @@ namespace DSC
 		int add_frame(ObjFrame* frame);
 		
 		static void oam_deploy_main();
-		static void oam_deploy_sub();				
+		static void oam_deploy_sub();		
+		
+		~Sprite();
 	};
 }

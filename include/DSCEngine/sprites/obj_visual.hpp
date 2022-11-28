@@ -36,6 +36,7 @@ namespace DSC
 			int anim_ticks = 1;
 			int crt_anim_ticks = 0;
 			
+			bool auto_delete_frames = true;
 		public:
 			ObjVisual(DSC::ObjSize obj_size);
 			
@@ -69,5 +70,7 @@ namespace DSC
 			void set_animation_ticks(int ticks);
 			
 			inline static constexpr int FRAMESET_END = -1;
+			
+			~ObjVisual();
 	};	
 }

@@ -95,3 +95,14 @@ void DSC::ObjVisual::update()
 	gfx_changed = false;
 	
 }
+
+DSC::ObjVisual::~ObjVisual()
+{
+	if(auto_delete_frames)
+	{
+		for(int i=0;i<frames.size();i++)
+		{
+			delete frames[i];
+		}
+	}
+}

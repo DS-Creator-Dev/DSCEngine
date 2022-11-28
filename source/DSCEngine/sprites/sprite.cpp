@@ -111,3 +111,8 @@ void DSC::Sprite::move(sf24 x, sf24 y)
 	pos.x += x;
 	pos.y += y;
 }
+
+DSC::Sprite::~Sprite()
+{
+	delete visual;
+}
